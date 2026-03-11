@@ -937,7 +937,7 @@ const Shop = () => {
             </motion.div>
 
             {/* Placeholder to prevent layout shift when header becomes fixed */}
-            {isFullScreen && <div className="h-[92vh] md:h-[85vh]" />}
+            {isFullScreen && <div className="h-[75vh] sm:h-[85vh] md:h-[85vh]" />}
 
             {viewMode === 'showcase' ? (
                 <div className="w-full relative z-40 bg-background -mt-2 pt-8 md:pt-16 pb-16">
