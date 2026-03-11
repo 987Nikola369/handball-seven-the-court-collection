@@ -377,23 +377,23 @@ export default function Content() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col gap-3 md:gap-4">
           <div>
-            <h2 className="text-3xl font-display uppercase tracking-widest font-black text-white">Content Manager</h2>
-            <p className="text-white/60 font-body mt-1">Edit content in Croatian — English & German are auto-translated on save</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-display uppercase tracking-widest font-black text-white">Content</h2>
+            <p className="text-white/60 font-body text-sm mt-1">Edit in Croatian — auto-translates to EN/DE on save</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 border border-white/10 text-white/50 text-xs font-display uppercase tracking-widest">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 px-3 py-2 border border-white/10 text-white/50 text-xs font-display uppercase tracking-widest">
               <Languages className="w-3 h-3" />
-              Editing: Hrvatski (HR)
+              Editing: HR
             </div>
             <button
               onClick={handleSaveAll}
               disabled={saving}
-              className="bg-primary text-black flex items-center gap-2 font-display uppercase tracking-widest font-bold px-6 py-2 hover:bg-primary/90 transition-colors disabled:opacity-50"
+              className="bg-primary text-black flex items-center justify-center gap-2 font-display uppercase tracking-widest font-bold px-5 py-2.5 hover:bg-primary/90 transition-colors disabled:opacity-50 text-sm min-h-[44px]"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {saving ? "Translating & Saving..." : "Save All"}
+              {saving ? "Translating..." : "Save All"}
             </button>
           </div>
         </div>
