@@ -229,7 +229,7 @@ export default function Designs() {
                                   <button
                                     onClick={() => void handleDelete(collectionKey, design)}
                                     disabled={isBusy(deleteKey)}
-                                    className="p-1 text-red-400/70 hover:text-red-400 disabled:opacity-60"
+                                    className="p-1 text-destructive/70 hover:text-destructive disabled:opacity-60"
                                   >
                                     {isBusy(deleteKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                                   </button>

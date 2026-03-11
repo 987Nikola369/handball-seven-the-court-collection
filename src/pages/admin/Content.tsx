@@ -185,7 +185,7 @@ function ImageUploadField({ value, onChange, sectionKey, fieldName }: {
           <img src={value} alt="Preview" className="h-32 object-cover border border-white/10" />
           <button
             onClick={() => onChange("")}
-            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-0.5 hover:bg-red-700"
+            className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5 hover:bg-destructive/90"
             title="Remove image"
           >
             <X className="w-3 h-3" />
