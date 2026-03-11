@@ -180,8 +180,8 @@ export default function Designs() {
                         disabled={isBusy(createKey)}
                         className="flex items-center gap-2 px-3 py-2 bg-primary text-black text-xs font-display uppercase tracking-widest font-bold disabled:opacity-60"
                       >
-                        {isBusy(createKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
-                        Add Design
+                        {isBusy(createKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : collectionKey === "front_logo" && designs.length > 0 ? <Pencil className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                        {collectionKey === "front_logo" && designs.length > 0 ? "Replace Design" : "Add Design"}
                       </button>
                     </div>
                   </div>
