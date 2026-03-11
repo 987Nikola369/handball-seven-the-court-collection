@@ -12,69 +12,20 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 
-// Import all designs
+// Fallback local designs
 // @ts-ignore
-const streetDesigns = import.meta.glob('/src/assets/design-collections/street/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
+const classicDesigns = import.meta.glob('/src/assets/design-collections/classic/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 // @ts-ignore
 const vintageDesigns = import.meta.glob('/src/assets/design-collections/vintage/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 // @ts-ignore
+const kidsDesigns = import.meta.glob('/src/assets/design-collections/kids/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 // @ts-ignore
-const logoDesigns = import.meta.glob('/src/assets/design-collections/logo/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
-
-const COLOR_TO_LOGO_MAP: Record<string, string> = {};
-
-// Use the first logo as a placeholder for all colors
-const placeholderLogo = Object.values(logoDesigns)[0] as string;
-['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
-    COLOR_TO_LOGO_MAP[color] = placeholderLogo;
-});
+const frontLogoDesigns = import.meta.glob('/src/assets/design-collections/logo/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 
 const URL_TO_FILENAME: Record<string, string> = {};
 const FILENAME_TO_URL: Record<string, string> = {};
 
-// Helper to find design URL by filename (for URL deep-linking)
-const findDesignUrlByFilename = (filename: string): string | null => {
-    // Direct lookup
-    if (FILENAME_TO_URL[filename]) return FILENAME_TO_URL[filename];
-
-    // Try case-insensitive lookup
-    const lowerFilename = filename.toLowerCase();
-    for (const [fn, url] of Object.entries(FILENAME_TO_URL)) {
-        if (fn.toLowerCase() === lowerFilename) return url;
-    }
-
-    // Try finding in ALL_DESIGNS by partial match
-    const match = ALL_DESIGNS.find(url => {
-        const fn = URL_TO_FILENAME[url] || url.split('/').pop()?.split('?')[0] || '';
-        return fn.toLowerCase() === lowerFilename;
-    });
-
-    return match || null;
-};
-
-// Designs to hide from the shop
-const HIDDEN_DESIGNS = [
-    'street-9.png',
-    'logo-4.png',
-    'logo-6.png',
-    'logo-8.png',
-    'logo-10.png',
-    'logo-11.png',
-    'KIDS-BADGE.png',
-    'STREET-BADGE.png',
-    'VINTAGE-BADGE.png',
-    'street-2.png',
-    'street-4.png',
-    'street-8.png',
-    'street-3-alt.png'
-];
-
-// Product-specific design restrictions now come from shop config API
-// See: useShopConfig().config?.{product}.restricted_designs
-
-// Helper to populate the map and filter/sort
 const processDesigns = (globResult: Record<string, unknown>) => {
-    // Populate URL map first
     Object.keys(globResult).forEach(path => {
         const url = globResult[path] as string;
         const filename = path.split('/').pop() || '';
@@ -85,37 +36,50 @@ const processDesigns = (globResult: Record<string, unknown>) => {
     });
 
     return Object.keys(globResult)
-        .filter(path => {
-            const filename = path.split('/').pop() || '';
-            return !HIDDEN_DESIGNS.includes(filename);
-        })
         .sort((a, b) => {
             const nameA = a.split('/').pop() || a;
             const nameB = b.split('/').pop() || b;
-            const isBadgeA = nameA.toUpperCase().includes('BADGE');
-            const isBadgeB = nameB.toUpperCase().includes('BADGE');
-            if (isBadgeA && !isBadgeB) return 1;
-            if (!isBadgeA && isBadgeB) return -1;
             return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
         })
         .map(key => globResult[key] as string);
 };
 
 const DESIGN_COLLECTIONS: Record<string, string[]> = {
-    'CLASSIC': processDesigns(streetDesigns),
+    'CLASSIC': processDesigns(classicDesigns),
     'VINTAGE': processDesigns(vintageDesigns),
-    'KIDS': processDesigns(logoDesigns),
+    'KIDS': processDesigns(kidsDesigns),
 };
 
-// Flatten for initial random selection
+const FRONT_LOGO_DESIGNS: string[] = processDesigns(frontLogoDesigns);
+
 const ALL_DESIGNS: string[] = [
     ...DESIGN_COLLECTIONS['CLASSIC'],
     ...DESIGN_COLLECTIONS['VINTAGE'],
     ...DESIGN_COLLECTIONS['KIDS']
 ];
 
-// Placeholder for Hoodie Front (Logo 3)
-const PLACEHOLDER_FRONT_DESIGN = logoDesigns['/src/assets/design-collections/logo/logo-3.png'] as string;
+const COLOR_TO_LOGO_MAP: Record<string, string> = {};
+const defaultFrontLogo = FRONT_LOGO_DESIGNS[0] || '';
+['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
+    COLOR_TO_LOGO_MAP[color] = defaultFrontLogo;
+});
+
+// Helper to find design URL by filename (for URL deep-linking)
+const findDesignUrlByFilename = (filename: string): string | null => {
+    if (FILENAME_TO_URL[filename]) return FILENAME_TO_URL[filename];
+
+    const lowerFilename = filename.toLowerCase();
+    for (const [fn, url] of Object.entries(FILENAME_TO_URL)) {
+        if (fn.toLowerCase() === lowerFilename) return url;
+    }
+
+    const match = [...ALL_DESIGNS, ...FRONT_LOGO_DESIGNS].find(url => {
+        const fn = URL_TO_FILENAME[url] || url.split('/').pop()?.split('?')[0] || '';
+        return fn.toLowerCase() === lowerFilename;
+    });
+
+    return match || null;
+};
 
 // Product Data
 const SHARED_COLORS = [
