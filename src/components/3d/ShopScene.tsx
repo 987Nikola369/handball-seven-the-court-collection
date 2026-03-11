@@ -418,11 +418,11 @@ const ProductModel = ({
                             // Make it look like real fabric
                             newMat.roughness = 0.85;      // High roughness for matte fabric look
                             newMat.metalness = 0.05;      // Very low metalness (fabric isn't metallic)
-                            newMat.sheen = 0.3;           // Slight sheen for soft fabric feel
-                            newMat.sheenRoughness = 0.5;  // Sheen roughness
-                            newMat.sheenColor = new THREE.Color(0xffffff); // White sheen
-                            newMat.clearcoat = 0.0;       // No clearcoat
-                            newMat.clearcoatRoughness = 0.0;
+                            (newMat as any).sheen = 0.3;
+                            (newMat as any).sheenRoughness = 0.5;
+                            (newMat as any).sheenColor = new THREE.Color(0xffffff);
+                            (newMat as any).clearcoat = 0.0;
+                            (newMat as any).clearcoatRoughness = 0.0;
 
                             // Add custom uniforms for the transition
                             newMat.userData.uniforms = {

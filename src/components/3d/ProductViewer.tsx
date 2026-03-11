@@ -127,9 +127,9 @@ const ModelWithPortal = ({
                             // FABRIC MATERIAL SETTINGS
                             fabricMat.roughness = 0.85;      // High roughness for matte fabric
                             fabricMat.metalness = 0.05;      // Low metalness
-                            fabricMat.sheen = 0.3;           // Soft fabric sheen
-                            fabricMat.sheenRoughness = 0.5;
-                            fabricMat.sheenColor = new THREE.Color(0xffffff);
+                            (fabricMat as any).sheen = 0.3;
+                            (fabricMat as any).sheenRoughness = 0.5;
+                            (fabricMat as any).sheenColor = new THREE.Color(0xffffff);
                         }
                     }
                 }
