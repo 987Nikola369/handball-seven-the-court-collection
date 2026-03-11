@@ -245,20 +245,19 @@ export default function Content() {
   const handleSaveAll = async () => {
     setSaving(true);
     try {
-      // 1. Collect all i18n texts across all sections for translation
+      // 1. Collect all i18n Croatian texts across all sections
       const allTexts: Record<string, string> = {};
-      const textToSectionMap: Record<string, string> = {};
-
       for (const section of SECTIONS) {
         const texts = collectI18nTexts(section.key);
         for (const [fieldName, value] of Object.entries(texts)) {
-          const uniqueKey = `${section.key}__${fieldName}`;
-          allTexts[uniqueKey] = value;
-          textToSectionMap[uniqueKey] = section.key;
+          allTexts[`${section.key}__${fieldName}`] = value;
         }
       }
 
-      // 2. Translate if there are i18n texts
+      // 2. Build finalMap from current state
+      const finalMap: Record<string, ContentData> = JSON.parse(JSON.stringify(contentMap));
+
+      // 3. Translate if there are i18n texts
       if (Object.keys(allTexts).length > 0) {
         toast.info("Translating to English and German...");
         
@@ -270,50 +269,20 @@ export default function Content() {
         if (translateData?.error) throw new Error(`Translation failed: ${translateData.error}`);
 
         const translations = translateData?.translations || {};
-
-        // 3. Apply translations back, grouped by section
-        const bySectionTranslations: Record<string, Record<string, { en: string; de: string }>> = {};
-        for (const [uniqueKey, trans] of Object.entries(translations) as [string, { en: string; de: string }][]) {
-          const [sectionKey, ...fieldParts] = uniqueKey.split("__");
-          const fieldName = fieldParts.join("__");
-          if (!bySectionTranslations[sectionKey]) bySectionTranslations[sectionKey] = {};
-          bySectionTranslations[sectionKey][fieldName] = trans;
-        }
-
-        // Apply all translations
-        for (const [sectionKey, trans] of Object.entries(bySectionTranslations)) {
-          applyTranslations(sectionKey, trans);
-        }
-
-        // Wait a tick for state to update
-        await new Promise(r => setTimeout(r, 100));
-      }
-
-      // 4. Save all content (with updated state including translations)
-      // Re-read state after translations applied
-      const finalMap = { ...contentMap };
-      
-      // Apply translations directly to finalMap for saving
-      if (Object.keys(allTexts).length > 0) {
-        const { data: translateData } = await supabase.functions.invoke("translate", {
-          body: { texts: allTexts, sourceLang: "hr", targetLangs: ["en", "de"] },
-        });
-        const translations = translateData?.translations || {};
         
+        // Apply translations to finalMap
         for (const [uniqueKey, trans] of Object.entries(translations) as [string, { en: string; de: string }][]) {
           const [sectionKey, ...fieldParts] = uniqueKey.split("__");
           const fieldName = fieldParts.join("__");
           const section = finalMap[sectionKey] || {};
-          const sectionConfig = SECTIONS.find(s => s.key === sectionKey);
 
-          // Check if it's a features_bar item
           if (fieldName.startsWith("item_") && fieldName.endsWith("_label")) {
             const idx = parseInt(fieldName.split("_")[1]);
             if (section.items && section.items[idx]) {
               const existing = typeof section.items[idx].label === "object" ? section.items[idx].label : {};
               section.items[idx] = { ...section.items[idx], label: { ...existing, en: trans.en, de: trans.de } };
             }
-          } else if (sectionConfig) {
+          } else {
             const existing = typeof section[fieldName] === "object" ? section[fieldName] : {};
             section[fieldName] = { ...existing, en: trans.en, de: trans.de };
           }
@@ -322,6 +291,7 @@ export default function Content() {
         }
       }
 
+      // 4. Save all
       for (const [key, value] of Object.entries(finalMap)) {
         await updateContent.mutateAsync({ key, value });
       }
