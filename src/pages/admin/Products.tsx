@@ -1,11 +1,98 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useState } from "react";
-import { Search, Edit2, Archive, Check, X, Save, Plus, Trash2 } from "lucide-react";
+import { Search, Edit2, Check, X, Save, Plus, Trash2 } from "lucide-react";
 import { useProducts, useUpsertProduct, useDeleteProduct, DbProduct } from "@/hooks/useProducts";
 import { useCollections } from "@/hooks/useCollections";
+import { Product3DThumbnail } from "@/components/Product3DCard";
 import { toast } from "sonner";
 
 type ProductForm = Partial<DbProduct> & { sizesStr?: string; colorsStr?: string };
+
+// Product edit modal extracted
+const ProductEditModal = ({ editing, setEditing, collections, onSave, isPending }: {
+  editing: ProductForm;
+  setEditing: (v: ProductForm | null) => void;
+  collections: any[] | undefined;
+  onSave: () => void;
+  isPending: boolean;
+}) => (
+  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setEditing(null)}>
+    <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-4" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-display uppercase tracking-widest text-white font-bold">{editing.id ? 'Edit Product' : 'New Product'}</h3>
+        <button onClick={() => setEditing(null)} className="text-white/50 hover:text-white"><X className="w-5 h-5" /></button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-body">
+        {[
+          { label: 'Name', key: 'name', type: 'text' },
+          { label: 'Slug', key: 'slug', type: 'text' },
+          { label: 'Price (€)', key: 'price', type: 'number' },
+        ].map(field => (
+          <div key={field.key}>
+            <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">{field.label}</label>
+            <input type={field.type} step={field.type === 'number' ? '0.01' : undefined}
+              value={(editing as any)[field.key] || (field.type === 'number' ? 0 : '')}
+              onChange={e => setEditing({ ...editing, [field.key]: field.type === 'number' ? parseFloat(e.target.value) : e.target.value })}
+              className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
+          </div>
+        ))}
+        <div>
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Collection</label>
+          <select value={editing.collection || 'classic'} onChange={e => setEditing({ ...editing, collection: e.target.value })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary">
+            {collections?.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+            {!collections?.length && <option value="classic">Classic</option>}
+          </select>
+        </div>
+        <div>
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Badge</label>
+          <select value={editing.badge || ''} onChange={e => setEditing({ ...editing, badge: e.target.value || null })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary">
+            <option value="">None</option>
+            <option value="new">New</option>
+            <option value="bestseller">Bestseller</option>
+            <option value="vintage">Vintage</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Stock Qty</label>
+          <input type="number" value={editing.stock_quantity || 0} onChange={e => setEditing({ ...editing, stock_quantity: parseInt(e.target.value) })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Sizes (comma-separated)</label>
+          <input value={editing.sizesStr || ''} onChange={e => setEditing({ ...editing, sizesStr: e.target.value })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" placeholder="S, M, L, XL" />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Colors (comma-separated)</label>
+          <input value={editing.colorsStr || ''} onChange={e => setEditing({ ...editing, colorsStr: e.target.value })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" placeholder="Black, White" />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">3D Model URL</label>
+          <input value={editing.image_url || ''} onChange={e => setEditing({ ...editing, image_url: e.target.value })}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" placeholder="/models/product.glb" />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Description</label>
+          <textarea value={editing.description || ''} onChange={e => setEditing({ ...editing, description: e.target.value })} rows={3}
+            className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary resize-none" />
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-white/50 text-xs font-display uppercase tracking-widest">Visible</label>
+          <input type="checkbox" checked={editing.is_visible !== false} onChange={e => setEditing({ ...editing, is_visible: e.target.checked })} />
+        </div>
+      </div>
+      <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+        <button onClick={() => setEditing(null)} className="px-4 py-2 text-white/50 hover:text-white font-display uppercase tracking-widest text-sm">Cancel</button>
+        <button onClick={onSave} disabled={isPending} className="bg-primary text-black flex items-center gap-2 font-display uppercase tracking-widest font-bold px-6 py-2 hover:bg-primary/90 transition-colors">
+          <Save className="w-4 h-4" /> {isPending ? 'Saving...' : 'Save'}
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Products() {
   const { data: products, isLoading } = useProducts(false);
@@ -30,11 +117,7 @@ export default function Products() {
   };
 
   const openEdit = (p: DbProduct) => {
-    setEditing({
-      ...p,
-      sizesStr: p.sizes?.join(', ') || '',
-      colorsStr: p.colors?.join(', ') || '',
-    });
+    setEditing({ ...p, sizesStr: p.sizes?.join(', ') || '', colorsStr: p.colors?.join(', ') || '' });
   };
 
   const handleSave = async () => {
@@ -49,9 +132,7 @@ export default function Products() {
       await upsert.mutateAsync(payload as any);
       toast.success('Product saved!');
       setEditing(null);
-    } catch (e: any) {
-      toast.error(e.message);
-    }
+    } catch (e: any) { toast.error(e.message); }
   };
 
   const handleDelete = async (id: string) => {
@@ -59,10 +140,10 @@ export default function Products() {
     try {
       await deleteMut.mutateAsync(id);
       toast.success('Product deleted');
-    } catch (e: any) {
-      toast.error(e.message);
-    }
+    } catch (e: any) { toast.error(e.message); }
   };
+
+  const isGlbUrl = (url: string) => url?.endsWith('.glb');
 
   return (
     <AdminLayout>
@@ -83,89 +164,8 @@ export default function Products() {
             className="bg-transparent border-none text-white w-full py-2 px-2 focus:outline-none font-body" />
         </div>
 
-        {/* Edit Modal */}
-        {editing && (
-          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setEditing(null)}>
-            <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-4" onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-display uppercase tracking-widest text-white font-bold">{editing.id ? 'Edit Product' : 'New Product'}</h3>
-                <button onClick={() => setEditing(null)} className="text-white/50 hover:text-white"><X className="w-5 h-5" /></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-body">
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Name</label>
-                  <input value={editing.name || ''} onChange={e => setEditing({ ...editing, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
-                </div>
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Slug</label>
-                  <input value={editing.slug || ''} onChange={e => setEditing({ ...editing, slug: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
-                </div>
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Price (€)</label>
-                  <input type="number" step="0.01" value={editing.price || 0} onChange={e => setEditing({ ...editing, price: parseFloat(e.target.value) })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
-                </div>
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Collection</label>
-                  <select value={editing.collection || 'classic'} onChange={e => setEditing({ ...editing, collection: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary">
-                    {collections?.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-                    {!collections?.length && <option value="classic">Classic</option>}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Badge</label>
-                  <select value={editing.badge || ''} onChange={e => setEditing({ ...editing, badge: e.target.value || null })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary">
-                    <option value="">None</option>
-                    <option value="new">New</option>
-                    <option value="bestseller">Bestseller</option>
-                    <option value="vintage">Vintage</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Stock Qty</label>
-                  <input type="number" value={editing.stock_quantity || 0} onChange={e => setEditing({ ...editing, stock_quantity: parseInt(e.target.value) })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Sizes (comma-separated)</label>
-                  <input value={editing.sizesStr || ''} onChange={e => setEditing({ ...editing, sizesStr: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" placeholder="S, M, L, XL" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Colors (comma-separated)</label>
-                  <input value={editing.colorsStr || ''} onChange={e => setEditing({ ...editing, colorsStr: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" placeholder="Black, White" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Image URL</label>
-                  <input value={editing.image_url || ''} onChange={e => setEditing({ ...editing, image_url: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-1">Description</label>
-                  <textarea value={editing.description || ''} onChange={e => setEditing({ ...editing, description: e.target.value })} rows={3}
-                    className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary resize-none" />
-                </div>
-                <div className="flex items-center gap-3">
-                  <label className="text-white/50 text-xs font-display uppercase tracking-widest">Visible</label>
-                  <input type="checkbox" checked={editing.is_visible !== false} onChange={e => setEditing({ ...editing, is_visible: e.target.checked })} />
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-                <button onClick={() => setEditing(null)} className="px-4 py-2 text-white/50 hover:text-white font-display uppercase tracking-widest text-sm">Cancel</button>
-                <button onClick={handleSave} disabled={upsert.isPending} className="bg-primary text-black flex items-center gap-2 font-display uppercase tracking-widest font-bold px-6 py-2 hover:bg-primary/90 transition-colors">
-                  <Save className="w-4 h-4" /> {upsert.isPending ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {editing && <ProductEditModal editing={editing} setEditing={setEditing} collections={collections} onSave={handleSave} isPending={upsert.isPending} />}
 
-        {/* Products Table */}
         <div className="bg-black border border-white/10 overflow-x-auto">
           {isLoading ? (
             <div className="p-8 text-center text-white/50 font-display uppercase tracking-widest">Loading...</div>
@@ -186,8 +186,14 @@ export default function Products() {
                   <tr key={product.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white/10 shrink-0 overflow-hidden">
-                          {product.image_url && <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />}
+                        <div className="w-12 h-12 shrink-0 overflow-hidden">
+                          {isGlbUrl(product.image_url) ? (
+                            <Product3DThumbnail modelUrl={product.image_url} />
+                          ) : (
+                            <div className="w-full h-full bg-white/10">
+                              {product.image_url && <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <p className="font-bold text-white">{product.name}</p>

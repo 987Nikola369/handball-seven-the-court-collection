@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
-import { ProductGrid } from "@/components/ProductCard";
+import { Product3DGrid } from "@/components/Product3DCard";
 import { useProducts } from "@/hooks/useProducts";
 
 const BestSellers = () => {
@@ -21,16 +21,12 @@ const BestSellers = () => {
       >
         {t("bestsellers.title")}
       </motion.h2>
-      <ProductGrid items={bestSellers.map(p => ({
-        id: p.slug,
+      <Product3DGrid items={bestSellers.map(p => ({
         name: p.name,
         price: Number(p.price),
-        collection: p.collection as any,
-        badge: p.badge as any,
-        sizes: p.sizes || [],
-        colors: p.colors || [],
-        description: p.description,
-        image: p.image_url,
+        modelUrl: p.image_url,
+        slug: p.slug,
+        badge: p.badge,
       }))} />
     </section>
   );

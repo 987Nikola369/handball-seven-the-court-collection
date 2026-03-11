@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-import { ProductGrid } from "@/components/ProductCard";
+import { Product3DGrid } from "@/components/Product3DCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCollections } from "@/hooks/useCollections";
 import { useI18n } from "@/lib/i18n";
@@ -19,15 +19,12 @@ const Collections = () => {
 
   const products = useMemo(() => {
     return (dbProducts ?? []).map(p => ({
-      id: p.slug,
       name: p.name,
       price: Number(p.price),
-      collection: p.collection as any,
-      badge: p.badge as any,
-      sizes: p.sizes || [],
-      colors: p.colors || [],
-      description: p.description,
-      image: p.image_url,
+      modelUrl: p.image_url,
+      slug: p.slug,
+      badge: p.badge,
+      collection: p.collection,
     }));
   }, [dbProducts]);
 
@@ -73,7 +70,7 @@ const Collections = () => {
             ))}
           </div>
 
-          <ProductGrid items={filtered} />
+          <Product3DGrid items={filtered} />
         </div>
       </main>
       <Footer />
