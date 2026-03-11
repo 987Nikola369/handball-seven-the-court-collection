@@ -56,6 +56,11 @@ export default function Designs() {
     if (!file) return;
     if (!file.type.startsWith("image/")) return toast.error("Only image files are allowed");
 
+    // Front Logo: only 1 design allowed — replace existing
+    if (collection === "front_logo" && localCollections.front_logo.length > 0) {
+      return handleReplace(collection, localCollections.front_logo[0], file);
+    }
+
     const opKey = `${collection}:create`;
     setBusyKey(opKey);
     try {
@@ -153,7 +158,9 @@ export default function Designs() {
                       className="flex items-center gap-4"
                     >
                       <h3 className="text-lg font-display uppercase tracking-widest text-primary font-bold">{COLLECTION_LABELS[collectionKey]}</h3>
-                      <span className="text-white/40 text-sm font-body">{designs.length} designs</span>
+                      <span className="text-white/40 text-sm font-body">
+                        {collectionKey === "front_logo" ? (designs.length > 0 ? "1 design (max 1)" : "0 designs (max 1)") : `${designs.length} designs`}
+                      </span>
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -173,8 +180,8 @@ export default function Designs() {
                         disabled={isBusy(createKey)}
                         className="flex items-center gap-2 px-3 py-2 bg-primary text-black text-xs font-display uppercase tracking-widest font-bold disabled:opacity-60"
                       >
-                        {isBusy(createKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
-                        Add Design
+                        {isBusy(createKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : collectionKey === "front_logo" && designs.length > 0 ? <Pencil className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                        {collectionKey === "front_logo" && designs.length > 0 ? "Replace Design" : "Add Design"}
                       </button>
                     </div>
                   </div>

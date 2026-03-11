@@ -8,6 +8,7 @@ import { useCart } from '@/lib/cart';
 import { useToast } from '@/components/ui/use-toast';
 import { useShopConfig } from '@/hooks/useShopConfig';
 import { useI18n } from '@/lib/i18n';
+import { useDesignCollections } from '@/hooks/useDesignCollections';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -58,11 +59,8 @@ const ALL_DESIGNS: string[] = [
     ...DESIGN_COLLECTIONS['KIDS']
 ];
 
-const COLOR_TO_LOGO_MAP: Record<string, string> = {};
-const defaultFrontLogo = FRONT_LOGO_DESIGNS[0] || '';
-['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
-    COLOR_TO_LOGO_MAP[color] = defaultFrontLogo;
-});
+// Static fallback front logo (used if DB has none)
+const STATIC_FRONT_LOGO = FRONT_LOGO_DESIGNS[0] || '';
 
 // Helper to find design URL by filename (for URL deep-linking)
 const findDesignUrlByFilename = (filename: string): string | null => {
@@ -159,7 +157,22 @@ const SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
 const Shop = () => {
     // i18n
     const { t } = useI18n();
+    const { collections: dbDesignCollections } = useDesignCollections();
 
+    // Resolve front logo: DB first, then static fallback
+    const frontLogoUrl = useMemo(() => {
+        const dbLogo = dbDesignCollections.front_logo?.[0]?.url;
+        return dbLogo || STATIC_FRONT_LOGO;
+    }, [dbDesignCollections]);
+
+    // Build color-to-logo map dynamically from DB front logo
+    const COLOR_TO_LOGO_MAP = useMemo(() => {
+        const map: Record<string, string> = {};
+        ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
+            map[color] = frontLogoUrl;
+        });
+        return map;
+    }, [frontLogoUrl]);
     // State
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState(INITIAL_PRODUCTS);
@@ -365,18 +378,15 @@ const Shop = () => {
         };
     }, []);
 
-    // Sync Hoodie/T-shirt Front Logo with Color
+    // Sync Hoodie/T-shirt Front Logo with Color (and when DB logo changes)
     useEffect(() => {
         if (selectedProduct === 'hoodie' || selectedProduct === 'tshirt') {
-            const logo = COLOR_TO_LOGO_MAP[selectedColor];
-            if (logo) {
-                setDesigns(prev => ({
-                    ...prev,
-                    front: logo
-                }));
-            }
+            setDesigns(prev => ({
+                ...prev,
+                front: frontLogoUrl
+            }));
         }
-    }, [selectedProduct, selectedColor]);
+    }, [selectedProduct, selectedColor, frontLogoUrl]);
 
     // Sync viewMode and isCustomizing with URL params for Back button support
     useEffect(() => {
