@@ -941,11 +941,11 @@ const Shop = () => {
 
             {viewMode === 'showcase' ? (
                 <div className="w-full relative z-40 bg-background -mt-2 pt-8 md:pt-16 pb-16">
-                    <div className="container mx-auto px-4 py-8 md:py-16 relative z-50 text-center">
-                        <h2 className="text-4xl md:text-6xl font-black text-primary font-display uppercase tracking-widest mb-6 drop-shadow-sm">
+                    <div className="container mx-auto px-5 py-8 md:py-16 relative z-50 text-center">
+                        <h2 className="text-2xl sm:text-4xl md:text-6xl font-black text-primary font-display uppercase tracking-wider sm:tracking-widest mb-4 sm:mb-6 drop-shadow-sm">
                             {t('shop.title')}
                         </h2>
-                        <p className="text-sm md:text-base font-medium text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                        <p className="text-xs sm:text-sm md:text-base font-medium text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                             {t('hero.subtitle')}
                         </p>
                     </div>
