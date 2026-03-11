@@ -66,7 +66,7 @@ export default function Settings() {
                 <div>
                   <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-2">Free Shipping Threshold (€)</label>
                   <input type="number" value={freeThreshold} onChange={e => setFreeThreshold(Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 text-white p-3 focus:outline-none focus:border-primary transition-colors" />
+                    className="w-full bg-white/5 border border-white/10 text-white p-3 focus:outline-none focus:border-primary transition-colors min-h-[48px]" />
                 </div>
                 <div>
                   <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-2">Standard Shipping Cost (€)</label>
