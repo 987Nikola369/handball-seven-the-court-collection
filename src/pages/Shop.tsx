@@ -725,11 +725,7 @@ const Shop = () => {
                                 ...DESIGN_COLLECTIONS['CLASSIC'],
                                 ...DESIGN_COLLECTIONS['VINTAGE']
                             ], [])}
-                            designReplacements={useMemo(() => {
-                                const s3 = streetDesigns['/src/assets/design-collections/street/street-3.png'] as string;
-                                const s3Alt = streetDesigns['/src/assets/design-collections/street/street-3-alt.png'] as string;
-                                return (s3 && s3Alt) ? { [s3]: s3Alt } : {};
-                            }, [])}
+                            designReplacements={useMemo(() => ({}), [])}
                             onCycleDesignUpdate={handleCycleDesignUpdate}
                             productAllowedColors={useMemo(() => ({
                                 tshirt: shopConfig?.tshirt?.allowed_colors,
