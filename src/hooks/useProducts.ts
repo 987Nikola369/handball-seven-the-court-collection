@@ -54,7 +54,7 @@ export function useUpsertProduct() {
         if (error) throw error;
         return data;
       } else {
-        const { data, error } = await supabase.from('products').insert(product).select().single();
+        const { data, error } = await supabase.from('products').insert([product as any]).select().single();
         if (error) throw error;
         return data;
       }
