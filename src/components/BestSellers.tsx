@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
-import { products } from "@/lib/products";
 import { ProductGrid } from "@/components/ProductCard";
+import { useProducts } from "@/hooks/useProducts";
 
 const BestSellers = () => {
   const { t } = useI18n();
-  const bestSellers = products.filter(p => p.badge === "bestseller" || p.badge === "new").slice(0, 4);
+  const { data: products } = useProducts();
+
+  const bestSellers = products?.filter(p => p.badge === "bestseller" || p.badge === "new").slice(0, 4) ?? [];
+
+  if (bestSellers.length === 0) return null;
 
   return (
     <section className="section-padding bg-card">
@@ -17,7 +21,17 @@ const BestSellers = () => {
       >
         {t("bestsellers.title")}
       </motion.h2>
-      <ProductGrid items={bestSellers} />
+      <ProductGrid items={bestSellers.map(p => ({
+        id: p.slug,
+        name: p.name,
+        price: Number(p.price),
+        collection: p.collection as any,
+        badge: p.badge as any,
+        sizes: p.sizes || [],
+        colors: p.colors || [],
+        description: p.description,
+        image: p.image_url,
+      }))} />
     </section>
   );
 };

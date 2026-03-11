@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag, Search } from "lucide-react";
+import { Menu, X, ShoppingBag, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n, Lang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t, lang, setLang } = useI18n();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
 
   const links = [
@@ -62,6 +64,26 @@ const Navbar = () => {
             ))}
           </div>
 
+          {/* Auth Links */}
+          <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link to="/admin" className="text-primary text-xs font-display uppercase tracking-widest hover:text-primary/80">
+                    Admin
+                  </Link>
+                )}
+                <button onClick={signOut} className="text-foreground/50 hover:text-foreground text-xs font-display uppercase tracking-widest">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" className="text-foreground/70 hover:text-foreground transition-colors">
+                <User size={18} />
+              </Link>
+            )}
+          </div>
+
           <button onClick={() => setCartOpen(true)} className="relative text-foreground/70 hover:text-foreground transition-colors">
             <ShoppingBag size={20} />
             {totalItems > 0 && (
@@ -99,6 +121,22 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setIsOpen(false)} className="font-display uppercase text-sm tracking-[0.2em] text-primary">
+                      Admin Panel
+                    </Link>
+                  )}
+                  <button onClick={() => { signOut(); setIsOpen(false); }} className="font-display uppercase text-sm tracking-[0.2em] text-foreground/50 text-left">
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link to="/auth" onClick={() => setIsOpen(false)} className="font-display uppercase text-sm tracking-[0.2em] text-foreground/70">
+                  Sign In
+                </Link>
+              )}
               <div className="flex gap-2 pt-4 border-t border-border">
                 {langs.map(l => (
                   <button
