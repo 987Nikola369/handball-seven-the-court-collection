@@ -69,6 +69,21 @@ interface ProductShowcaseProps {
 const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }: ProductShowcaseProps) => {
   const { t } = useI18n();
   const { config: shopConfig } = useShopConfig();
+  const { collections: dbDesignCollections } = useDesignCollections();
+
+  // Resolve front logo: DB first, then static fallback
+  const frontLogoUrl = useMemo(() => {
+    const dbLogo = dbDesignCollections.front_logo?.[0]?.url;
+    return dbLogo || STATIC_FRONT_LOGO;
+  }, [dbDesignCollections]);
+
+  const COLOR_TO_LOGO_MAP = useMemo(() => {
+    const map: Record<string, string> = {};
+    ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
+      map[color] = frontLogoUrl;
+    });
+    return map;
+  }, [frontLogoUrl]);
 
   const logoList = useMemo(() => DESIGN_COLLECTIONS['KIDS'], []);
   const hoodieBackList = useMemo(() => [...DESIGN_COLLECTIONS['CLASSIC']], []);
