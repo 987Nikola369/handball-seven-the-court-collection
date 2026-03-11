@@ -3,23 +3,22 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShopScene } from '@/components/3d/ShopScene';
 import { useShopConfig } from '@/hooks/useShopConfig';
+import { useDesignCollections } from '@/hooks/useDesignCollections';
 import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 
-// Import all designs (same as Shop.tsx)
+// Import all designs
 // @ts-ignore
-const streetDesigns = import.meta.glob('/src/assets/design-collections/street/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
+const classicDesigns = import.meta.glob('/src/assets/design-collections/classic/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 // @ts-ignore
 const vintageDesigns = import.meta.glob('/src/assets/design-collections/vintage/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 // @ts-ignore
-const logoDesigns = import.meta.glob('/src/assets/design-collections/logo/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
+const kidsDesigns = import.meta.glob('/src/assets/design-collections/kids/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
+// @ts-ignore
+const fallbackLogoDesigns = import.meta.glob('/src/assets/design-collections/logo/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' });
 
-const COLOR_TO_LOGO_MAP: Record<string, string> = {};
-const placeholderLogo = Object.values(logoDesigns)[0] as string;
-['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
-  COLOR_TO_LOGO_MAP[color] = placeholderLogo;
-});
+const STATIC_FRONT_LOGO = (Object.values(fallbackLogoDesigns)[0] as string) || '';
 
 const URL_TO_FILENAME: Record<string, string> = {};
 const FILENAME_TO_URL: Record<string, string> = {};
@@ -57,9 +56,9 @@ const processDesigns = (globResult: Record<string, unknown>) => {
 };
 
 const DESIGN_COLLECTIONS: Record<string, string[]> = {
-  'CLASSIC': processDesigns(streetDesigns),
+  'CLASSIC': processDesigns(classicDesigns),
   'VINTAGE': processDesigns(vintageDesigns),
-  'KIDS': processDesigns(logoDesigns),
+  'KIDS': processDesigns(kidsDesigns),
 };
 
 interface ProductShowcaseProps {
@@ -70,6 +69,21 @@ interface ProductShowcaseProps {
 const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }: ProductShowcaseProps) => {
   const { t } = useI18n();
   const { config: shopConfig } = useShopConfig();
+  const { collections: dbDesignCollections } = useDesignCollections();
+
+  // Resolve front logo: DB first, then static fallback
+  const frontLogoUrl = useMemo(() => {
+    const dbLogo = dbDesignCollections.front_logo?.[0]?.url;
+    return dbLogo || STATIC_FRONT_LOGO;
+  }, [dbDesignCollections]);
+
+  const COLOR_TO_LOGO_MAP = useMemo(() => {
+    const map: Record<string, string> = {};
+    ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
+      map[color] = frontLogoUrl;
+    });
+    return map;
+  }, [frontLogoUrl]);
 
   const logoList = useMemo(() => DESIGN_COLLECTIONS['KIDS'], []);
   const hoodieBackList = useMemo(() => [...DESIGN_COLLECTIONS['CLASSIC']], []);
@@ -80,11 +94,7 @@ const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }:
     ...DESIGN_COLLECTIONS['VINTAGE']
   ], []);
 
-  const designReplacements = useMemo(() => {
-    const s3 = streetDesigns['/src/assets/design-collections/street/street-3.png'] as string;
-    const s3Alt = streetDesigns['/src/assets/design-collections/street/street-3-alt.png'] as string;
-    return (s3 && s3Alt) ? { [s3]: s3Alt } : {};
-  }, []);
+  const designReplacements = useMemo(() => ({}), []);
 
   const productAllowedColors = useMemo(() => ({
     tshirt: shopConfig?.tshirt?.allowed_colors,
