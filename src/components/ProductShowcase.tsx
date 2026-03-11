@@ -56,9 +56,9 @@ const processDesigns = (globResult: Record<string, unknown>) => {
 };
 
 const DESIGN_COLLECTIONS: Record<string, string[]> = {
-  'CLASSIC': processDesigns(streetDesigns),
+  'CLASSIC': processDesigns(classicDesigns),
   'VINTAGE': processDesigns(vintageDesigns),
-  'KIDS': processDesigns(logoDesigns),
+  'KIDS': processDesigns(kidsDesigns),
 };
 
 interface ProductShowcaseProps {
