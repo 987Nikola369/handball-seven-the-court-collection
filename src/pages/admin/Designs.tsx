@@ -133,8 +133,8 @@ export default function Designs() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-display uppercase tracking-widest font-black text-white">Design Management</h2>
-          <p className="text-white/60 font-body mt-1">Manage designs for VINTAGE, KIDS, CLASSIC and FRONT LOGO</p>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-display uppercase tracking-widest font-black text-white">Designs</h2>
+          <p className="text-white/60 font-body text-sm mt-1">Manage designs for collections</p>
         </div>
 
         {previewUrl && (
@@ -152,14 +152,14 @@ export default function Designs() {
               const createKey = `${collectionKey}:create`;
               return (
                 <div key={collectionKey} className="bg-black border border-white/10">
-                  <div className="w-full flex justify-between items-center p-4 border-b border-white/10">
+                  <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 border-b border-white/10">
                     <button
                       onClick={() => setExpandedId(expandedId === collectionKey ? "vintage" : collectionKey)}
-                      className="flex items-center gap-4"
+                      className="flex items-center gap-3"
                     >
-                      <h3 className="text-lg font-display uppercase tracking-widest text-primary font-bold">{COLLECTION_LABELS[collectionKey]}</h3>
-                      <span className="text-white/40 text-sm font-body">
-                        {collectionKey === "front_logo" ? (designs.length > 0 ? "1 design (max 1)" : "0 designs (max 1)") : `${designs.length} designs`}
+                      <h3 className="text-base sm:text-lg font-display uppercase tracking-widest text-primary font-bold">{COLLECTION_LABELS[collectionKey]}</h3>
+                      <span className="text-white/40 text-xs font-body">
+                        {collectionKey === "front_logo" ? (designs.length > 0 ? "1 (max 1)" : "0 (max 1)") : `${designs.length}`}
                       </span>
                     </button>
 
@@ -178,10 +178,10 @@ export default function Designs() {
                       <button
                         onClick={() => addInputRefs.current[collectionKey]?.click()}
                         disabled={isBusy(createKey)}
-                        className="flex items-center gap-2 px-3 py-2 bg-primary text-black text-xs font-display uppercase tracking-widest font-bold disabled:opacity-60"
+                        className="flex items-center gap-2 px-3 py-2 bg-primary text-black text-xs font-display uppercase tracking-widest font-bold disabled:opacity-60 min-h-[40px]"
                       >
                         {isBusy(createKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : collectionKey === "front_logo" && designs.length > 0 ? <Pencil className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                        {collectionKey === "front_logo" && designs.length > 0 ? "Replace Design" : "Add Design"}
+                        {collectionKey === "front_logo" && designs.length > 0 ? "Replace" : "Add"}
                       </button>
                     </div>
                   </div>
@@ -203,7 +203,7 @@ export default function Designs() {
                                 </button>
                                 <p className="text-[10px] text-white/60 truncate font-body">{design.name}</p>
 
-                                <div className="grid grid-cols-4 gap-1">
+                                <div className="grid grid-cols-4 gap-1 [&_button]:min-w-[36px] [&_button]:min-h-[36px] [&_button]:flex [&_button]:items-center [&_button]:justify-center">
                                   <button onClick={() => setPreviewUrl(design.url)} className="p-1 text-white/70 hover:text-white"><Eye className="w-3 h-3" /></button>
                                   <button onClick={() => window.open(design.url, "_blank")} className="p-1 text-white/70 hover:text-white"><Download className="w-3 h-3" /></button>
 
@@ -229,7 +229,7 @@ export default function Designs() {
                                   <button
                                     onClick={() => void handleDelete(collectionKey, design)}
                                     disabled={isBusy(deleteKey)}
-                                    className="p-1 text-red-400/70 hover:text-red-400 disabled:opacity-60"
+                                    className="p-1 text-destructive/70 hover:text-destructive disabled:opacity-60"
                                   >
                                     {isBusy(deleteKey) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                                   </button>
