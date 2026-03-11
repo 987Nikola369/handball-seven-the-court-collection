@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, Palette, FileText, Settings, LogOut, MountainSnow, ShoppingCart, Users } from "lucide-react";
+import { LayoutDashboard, Package, Palette, FileText, Settings, LogOut, MountainSnow, ShoppingCart, Users, Layers } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
