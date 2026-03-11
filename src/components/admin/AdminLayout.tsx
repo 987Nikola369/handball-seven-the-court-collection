@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, Palette, FileText, Settings, LogOut, MountainSnow } from "lucide-react";
+import { LayoutDashboard, Package, Palette, FileText, Settings, LogOut, MountainSnow, ShoppingCart } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface AdminLayoutProps {
 const navItems = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Products", path: "/admin/products", icon: Package },
+  { name: "Orders", path: "/admin/orders", icon: ShoppingCart },
   { name: "Designs", path: "/admin/designs", icon: Palette },
   { name: "Content", path: "/admin/content", icon: FileText },
   { name: "Settings", path: "/admin/settings", icon: Settings },
@@ -16,6 +18,7 @@ const navItems = [
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col md:flex-row font-body">
@@ -74,14 +77,21 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         </nav>
 
         {/* Footer Area */}
-        <div className="p-4 border-t border-white/10 hidden md:block">
+        <div className="p-4 border-t border-white/10 hidden md:block space-y-1">
           <Link
             to="/"
             className="flex items-center gap-3 px-4 py-3 text-white/50 hover:text-white hover:bg-white/5 transition-colors"
           >
             <LogOut className="w-5 h-5 shrink-0" />
-            <span className="font-display uppercase tracking-widest text-sm">Exit Admin</span>
+            <span className="font-display uppercase tracking-widest text-sm">Back to Store</span>
           </Link>
+          <button
+            onClick={signOut}
+            className="flex items-center gap-3 px-4 py-3 text-red-400/70 hover:text-red-400 hover:bg-red-400/5 transition-colors w-full"
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            <span className="font-display uppercase tracking-widest text-sm">Sign Out</span>
+          </button>
         </div>
       </aside>
 
