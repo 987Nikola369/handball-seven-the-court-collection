@@ -119,14 +119,6 @@ const Hero = () => {
       <div className="relative z-10 w-full flex flex-col-reverse lg:flex-row items-center min-h-[100svh]">
         {/* Text content — centered on mobile/tablet, left-aligned on desktop */}
         <div className="px-5 md:px-12 lg:px-20 pb-16 sm:pb-20 lg:pb-0 pt-4 lg:pt-0 max-w-2xl lg:w-1/2 lg:flex-shrink-0 text-center lg:text-left flex flex-col items-center lg:items-start">
-          <motion.img
-            src={logo}
-            alt="Handball Seven"
-            className="h-12 sm:h-16 md:h-24 mb-4 sm:mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          />
           <motion.p
             className="text-foreground/70 text-xs sm:text-sm md:text-base font-body tracking-wide mb-2"
             initial={{ opacity: 0, y: 20 }}
