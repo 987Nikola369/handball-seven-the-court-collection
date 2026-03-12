@@ -94,7 +94,7 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
             std.roughness = 0.5;
             std.metalness = 0;
           } else if (NO_COLOR_CYCLE.has(product.id)) {
-            // Cap etc: keep original texture, just set color
+            // Cap etc: keep original texture + alpha maps for proper material cutouts
             std.color.set(color);
             std.roughness = 0.85;
             std.metalness = 0.05;
@@ -104,8 +104,12 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
             std.roughness = 0.85;
             std.metalness = 0.05;
           }
-          std.transparent = true;
+
+          // Match ShopScene behavior: keep body materials fully opaque unless actively fading
           std.opacity = 1;
+          std.transparent = false;
+          std.depthWrite = true;
+          std.alphaTest = (std.map || std.alphaMap) ? 0.5 : 0;
 
           // Inject glitch shader via onBeforeCompile
           const uniforms = {
