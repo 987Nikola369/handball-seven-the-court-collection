@@ -94,7 +94,7 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
             std.roughness = 0.5;
             std.metalness = 0;
           } else if (NO_COLOR_CYCLE.has(product.id)) {
-            // Cap etc: keep original texture, just set color
+            // Cap etc: keep original texture + alpha maps for proper material cutouts
             std.color.set(color);
             std.roughness = 0.85;
             std.metalness = 0.05;
@@ -104,8 +104,12 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
             std.roughness = 0.85;
             std.metalness = 0.05;
           }
-          std.transparent = true;
+
+          // Match ShopScene behavior: keep body materials fully opaque unless actively fading
           std.opacity = 1;
+          std.transparent = false;
+          std.depthWrite = true;
+          std.alphaTest = (std.map || std.alphaMap) ? 0.5 : 0;
 
           // Inject glitch shader via onBeforeCompile
           const uniforms = {
@@ -252,10 +256,25 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
 
     // Drive glitch uniforms from transitionProgress
     const opacity = 1 - transitionProgress;
+    const isFading = opacity < 0.99;
+
     glitchUniformsRef.current.forEach(u => {
       u.uGlitch.value = transitionProgress;
       u.uTime.value = timeRef.current;
       u.uOpacity.value = opacity;
+    });
+
+    // Keep cap/body fully solid unless actively transitioning to avoid see-through artifacts
+    bodyMatsRef.current.forEach((mat) => {
+      const nextTransparent = isFading;
+      const nextAlphaTest = isFading ? 0 : ((mat.map || mat.alphaMap) ? 0.5 : 0);
+
+      if (mat.transparent !== nextTransparent || mat.alphaTest !== nextAlphaTest) {
+        mat.transparent = nextTransparent;
+        mat.depthWrite = true;
+        mat.alphaTest = nextAlphaTest;
+        mat.needsUpdate = true;
+      }
     });
 
     // Also fade print area opacity
