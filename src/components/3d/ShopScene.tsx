@@ -12,9 +12,9 @@ const GradientBackground = () => {
       depthWrite: false,
       depthTest: false,
       uniforms: {
-        uColorTop: { value: new THREE.Color('#ffffff') },
-        uColorMid: { value: new THREE.Color('#f0f0f0') },
-        uColorBottom: { value: new THREE.Color('#e0e0e0') },
+        uColorTop: { value: new THREE.Color('#e8e8e8') },
+        uColorMid: { value: new THREE.Color('#d5d5d5') },
+        uColorBottom: { value: new THREE.Color('#c8c8c8') },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -1708,7 +1708,7 @@ const ProductModel = ({
                     <Text
                         font="/fonts/Oswald/static/Oswald-Bold.ttf"
                         fontSize={0.25 / (scale || 1)}
-                        color="#ffffff"
+                        color="#3a3a3a"
                         anchorX="center"
                         anchorY="bottom"
                         textAlign="center"
@@ -1722,7 +1722,7 @@ const ProductModel = ({
                         <Text
                             font="/fonts/Oswald/static/Oswald-Bold.ttf"
                             fontSize={0.2 / (scale || 1)}
-                            color="#ffffff"
+                            color="#c77d3c"
                             anchorX="center"
                             anchorY="top"
                             position={[0, -0.05 / (scale || 1), 0]}
