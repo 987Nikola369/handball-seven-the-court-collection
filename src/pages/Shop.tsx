@@ -922,7 +922,7 @@ const Shop = () => {
                                     exit={{ opacity: 0, y: 10 }}
                                     className="flex justify-start flex-nowrap gap-2 p-2 bg-background/5 backdrop-blur-sm rounded-none border border-white/10 shadow-2xl overflow-x-auto w-full max-w-full custom-scrollbar touch-pan-x"
                                 >
-                                    {DESIGN_COLLECTIONS[expandedCollection]
+                                    {(effectiveCollections[expandedCollection] || [])
                                         .filter(design => {
                                             const filename = URL_TO_FILENAME[design] || design.split('/').pop()?.split('?')[0] || '';
                                             // Use dynamic config for restrictions
