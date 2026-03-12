@@ -66,7 +66,7 @@ const Hero = () => {
     return map;
   }, [shopConfig, frontLogoUrl]);
 
-  // Build per-product design lists
+  // Build per-product design lists (with restriction filtering like ShopScene)
   const allDesigns = useMemo(() => [
     ...effectiveCollections.classic,
     ...effectiveCollections.vintage,
@@ -75,12 +75,30 @@ const Hero = () => {
 
   const logoList = useMemo(() => frontLogoUrl ? [frontLogoUrl] : [], [frontLogoUrl]);
 
+  // Filter restricted designs per product (matching ShopScene capCleanList / bottleCleanList logic)
+  const capFilteredDesigns = useMemo(() => {
+    const restricted = shopConfig?.cap?.restricted_designs || ['street-5.png'];
+    return allDesigns.filter(url => {
+      const filename = url.split('/').pop()?.split('?')[0] || '';
+      return !restricted.includes(filename);
+    });
+  }, [allDesigns, shopConfig]);
+
+  const bottleFilteredDesigns = useMemo(() => {
+    const restricted = shopConfig?.bottle?.restricted_designs || [];
+    if (restricted.length === 0) return logoList.length > 0 ? logoList : allDesigns;
+    return allDesigns.filter(url => {
+      const filename = url.split('/').pop()?.split('?')[0] || '';
+      return !restricted.includes(filename);
+    });
+  }, [allDesigns, logoList, shopConfig]);
+
   const frontDesigns = useMemo(() => ({
     tshirt: logoList,
     hoodie: logoList,
-    cap: allDesigns,
-    bottle: logoList.length > 0 ? logoList : allDesigns,
-  }), [logoList, allDesigns]);
+    cap: capFilteredDesigns,
+    bottle: bottleFilteredDesigns,
+  }), [logoList, capFilteredDesigns, bottleFilteredDesigns]);
 
   const backDesigns = useMemo(() => ({
     tshirt: effectiveCollections.vintage,
