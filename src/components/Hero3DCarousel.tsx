@@ -241,8 +241,10 @@ const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionPr
   useFrame((_, delta) => {
     timeRef.current += delta;
 
-    // Update shared rotation
-    rotationRef.current += delta * 0.4;
+    // Only primary model advances rotation; both read it
+    if (isPrimary) {
+      rotationRef.current += delta * 0.4;
+    }
     if (groupRef.current) {
       groupRef.current.rotation.y = rotationRef.current;
     }
