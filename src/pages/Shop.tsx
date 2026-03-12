@@ -747,18 +747,18 @@ const Shop = () => {
                             products={products}
                             colorToLogoMap={COLOR_TO_LOGO_MAP}
                             hasUserInteracted={hasUserInteracted}
-                            logoList={frontLogoUrl ? [frontLogoUrl] : DESIGN_COLLECTIONS['KIDS']}
+                            logoList={frontLogoUrl ? [frontLogoUrl] : effectiveCollections['KIDS']}
                             hoodieBackList={useMemo(() => [
-                                ...DESIGN_COLLECTIONS['CLASSIC']
-                            ], [])}
+                                ...effectiveCollections['CLASSIC']
+                            ], [effectiveCollections])}
                             vintageList={useMemo(() => [
-                                ...DESIGN_COLLECTIONS['VINTAGE']
-                            ], [])}
+                                ...effectiveCollections['VINTAGE']
+                            ], [effectiveCollections])}
                             allDesignsList={useMemo(() => [
-                                ...DESIGN_COLLECTIONS['KIDS'],
-                                ...DESIGN_COLLECTIONS['CLASSIC'],
-                                ...DESIGN_COLLECTIONS['VINTAGE']
-                            ], [])}
+                                ...effectiveCollections['KIDS'],
+                                ...effectiveCollections['CLASSIC'],
+                                ...effectiveCollections['VINTAGE']
+                            ], [effectiveCollections])}
                             designReplacements={useMemo(() => ({}), [])}
                             onCycleDesignUpdate={handleCycleDesignUpdate}
                             productAllowedColors={useMemo(() => ({
