@@ -309,10 +309,11 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
 
   const [current, setCurrent] = useState<CycleState>(() => pickForProduct(0));
   const [next, setNext] = useState<CycleState | null>(null);
-  const [transition, setTransition] = useState(0); // 0=showing current, 1=fully transitioned
+  const [transition, setTransition] = useState(0);
   const transitionRef = useRef(0);
   const isTransitioning = useRef(false);
   const nextProductIdx = useRef(1);
+  const sharedRotation = useRef(0); // shared rotation for seamless handoff
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -323,7 +324,6 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
       isTransitioning.current = true;
       transitionRef.current = 0;
 
-      // Fade out current
       const fadeOut = setTimeout(() => {
         setCurrent(nextState);
         setNext(null);
@@ -352,7 +352,6 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
       <spotLight position={[5, 5, 5]} angle={0.3} penumbra={1} intensity={0.6} />
       <Environment preset="city" />
       <group position={[0, -0.5, 0]}>
-        {/* Current product fading out */}
         <Suspense fallback={null}>
           <HeroModel
             product={PRODUCTS[current.productIndex]}
@@ -360,9 +359,9 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
             frontDesignUrl={current.frontDesign || TRANSPARENT_PIXEL}
             backDesignUrl={current.backDesign || TRANSPARENT_PIXEL}
             transitionProgress={next ? transition : 0}
+            rotationRef={sharedRotation}
           />
         </Suspense>
-        {/* Next product fading in */}
         {next && (
           <Suspense fallback={null}>
             <HeroModel
@@ -371,11 +370,13 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
               frontDesignUrl={next.frontDesign || TRANSPARENT_PIXEL}
               backDesignUrl={next.backDesign || TRANSPARENT_PIXEL}
               transitionProgress={1 - transition}
+              rotationRef={sharedRotation}
             />
           </Suspense>
         )}
       </group>
     </>
+  );
   );
 };
 
