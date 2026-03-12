@@ -377,10 +377,7 @@ const Shop = () => {
     }, [designs, activeZone, shopConfig]);
 
 
-    // Static local products (No WP fetch)
-    useEffect(() => {
-        // KeepingINITIAL_PRODUCTS
-    }, []);
+    // DB products are now reactive via useMemo - no need for static init
 
     // Reset defaults when product changes
     useEffect(() => {
