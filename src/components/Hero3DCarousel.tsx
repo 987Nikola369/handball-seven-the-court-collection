@@ -53,10 +53,11 @@ interface HeroModelProps {
   color: string;
   frontDesignUrl: string;
   backDesignUrl: string;
-  transitionProgress: number; // 0 = fully visible, 1 = fully glitched out
+  transitionProgress: number;
+  rotationRef: React.MutableRefObject<number>; // shared rotation angle
 }
 
-const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionProgress }: HeroModelProps) => {
+const HeroModel = ({ product, color, frontDesignUrl, backDesignUrl, transitionProgress, rotationRef }: HeroModelProps) => {
   const { scene } = useGLTF(product.url);
   const groupRef = useRef<THREE.Group>(null);
   const bodyMatsRef = useRef<THREE.MeshStandardMaterial[]>([]);
