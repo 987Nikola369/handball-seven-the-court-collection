@@ -243,7 +243,7 @@ const Shop = () => {
     const [isColorPickerOpen, setIsColorPickerOpen] = useState(false); // Kept for potential mobile use
 
     const [isSizePickerOpen, setIsSizePickerOpen] = useState(false);
-    const [expandedCollection, setExpandedCollection] = useState<string>('KIDS');
+    const [expandedCollection, setExpandedCollection] = useState<string>('STREET');
     const [activeTab, setActiveTab] = useState<'details' | 'features' | 'reviews'>('details');
     const [cartCount, setCartCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
