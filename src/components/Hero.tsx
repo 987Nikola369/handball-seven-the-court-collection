@@ -25,7 +25,7 @@ const processDesigns = (globResult: Record<string, unknown>) =>
 const STATIC_COLLECTIONS = {
   classic: processDesigns(classicDesigns),
   vintage: processDesigns(vintageDesigns),
-  kids: processDesigns(kidsDesigns),
+  street: processDesigns(streetDesigns),
 };
 
 const Hero = () => {
