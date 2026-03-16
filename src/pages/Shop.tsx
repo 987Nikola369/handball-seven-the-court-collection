@@ -49,7 +49,7 @@ const processDesigns = (globResult: Record<string, unknown>) => {
 const DESIGN_COLLECTIONS: Record<string, string[]> = {
     'CLASSIC': processDesigns(classicDesigns),
     'VINTAGE': processDesigns(vintageDesigns),
-    'KIDS': processDesigns(kidsDesigns),
+    'STREET': processDesigns(streetDesigns),
 };
 
 const FRONT_LOGO_DESIGNS: string[] = processDesigns(frontLogoDesigns);
@@ -57,7 +57,7 @@ const FRONT_LOGO_DESIGNS: string[] = processDesigns(frontLogoDesigns);
 const ALL_DESIGNS: string[] = [
     ...DESIGN_COLLECTIONS['CLASSIC'],
     ...DESIGN_COLLECTIONS['VINTAGE'],
-    ...DESIGN_COLLECTIONS['KIDS']
+    ...DESIGN_COLLECTIONS['STREET']
 ];
 
 // Static fallback front logo (used if DB has none)
