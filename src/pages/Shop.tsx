@@ -764,7 +764,7 @@ const Shop = () => {
                             products={products}
                             colorToLogoMap={COLOR_TO_LOGO_MAP}
                             hasUserInteracted={hasUserInteracted}
-                            logoList={frontLogoUrl ? [frontLogoUrl] : effectiveCollections['KIDS']}
+                            logoList={frontLogoUrl ? [frontLogoUrl] : effectiveCollections['STREET']}
                             hoodieBackList={useMemo(() => [
                                 ...effectiveCollections['CLASSIC']
                             ], [effectiveCollections])}
@@ -772,7 +772,7 @@ const Shop = () => {
                                 ...effectiveCollections['VINTAGE']
                             ], [effectiveCollections])}
                             allDesignsList={useMemo(() => [
-                                ...effectiveCollections['KIDS'],
+                                ...effectiveCollections['STREET'],
                                 ...effectiveCollections['CLASSIC'],
                                 ...effectiveCollections['VINTAGE']
                             ], [effectiveCollections])}
