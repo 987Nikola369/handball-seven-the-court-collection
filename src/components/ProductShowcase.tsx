@@ -58,7 +58,7 @@ const processDesigns = (globResult: Record<string, unknown>) => {
 const DESIGN_COLLECTIONS: Record<string, string[]> = {
   'CLASSIC': processDesigns(classicDesigns),
   'VINTAGE': processDesigns(vintageDesigns),
-  'KIDS': processDesigns(kidsDesigns),
+  'STREET': processDesigns(streetDesigns),
 };
 
 interface ProductShowcaseProps {
