@@ -19,6 +19,7 @@ const Index = () => {
         <FeaturedCollections />
         <BestSellers />
         <BrandStory />
+        <HandballCulture />
         <LifestyleBanner />
         <Newsletter />
       </main>
