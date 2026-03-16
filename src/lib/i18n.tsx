@@ -54,6 +54,44 @@ const fallbackTranslations: Record<string, Record<Lang, string>> = {
   "newsletter.placeholder": { en: "Your email address", de: "Deine E-Mail-Adresse", hr: "Tvoja email adresa" },
   "newsletter.button": { en: "Subscribe", de: "Abonnieren", hr: "Pretplati se" },
 
+  // Handball Culture
+  "handball.title": { en: "Born on the Court", de: "Auf dem Feld geboren", hr: "Rođeno na terenu" },
+  "handball.subtitle": {
+    en: "Every piece carries the DNA of the game. The rules that shaped us — now woven into what we wear.",
+    de: "Jedes Stück trägt die DNA des Spiels. Die Regeln, die uns geprägt haben — jetzt in das eingewoben, was wir tragen.",
+    hr: "Svaki komad nosi DNK igre. Pravila koja su nas oblikovala — sada utkana u ono što nosimo."
+  },
+  "handball.suspension.title": { en: "2-Minute Suspension", de: "2-Minuten Strafe", hr: "Isključenje 2 minute" },
+  "handball.suspension.desc": {
+    en: "Sometimes you have to sit out. But the stubborn always come back stronger.",
+    de: "Manchmal muss man draußen sitzen. Aber die Sturköpfe kommen stärker zurück.",
+    hr: "Ponekad moraš sjesti. Ali tvrdoglavi se uvijek vraćaju jači."
+  },
+  "handball.yellow_card.title": { en: "Yellow Card", de: "Gelbe Karte", hr: "Žuti karton" },
+  "handball.yellow_card.desc": {
+    en: "A warning. We don't play it safe — we play it real.",
+    de: "Eine Verwarnung. Wir spielen nicht auf Sicherheit — wir spielen echt.",
+    hr: "Upozorenje. Ne igramo na sigurno — igramo stvarno."
+  },
+  "handball.red_card.title": { en: "Red Card", de: "Rote Karte", hr: "Crveni karton" },
+  "handball.red_card.desc": {
+    en: "No compromises. Full commitment, every single time.",
+    de: "Keine Kompromisse. Voller Einsatz, jedes Mal.",
+    hr: "Nema kompromisa. Potpuna predanost, svaki put."
+  },
+  "handball.seven_meter.title": { en: "7-Meter Throw", de: "Siebenmeter", hr: "Sedmerac" },
+  "handball.seven_meter.desc": {
+    en: "One shot. One moment. That's where legends are made.",
+    de: "Ein Wurf. Ein Moment. Dort werden Legenden geboren.",
+    hr: "Jedan šut. Jedan trenutak. Tu se stvaraju legende."
+  },
+  "handball.attack_foul.title": { en: "Attack Foul", de: "Stürmerfoul", hr: "Faul u napadu" },
+  "handball.attack_foul.desc": {
+    en: "Push through the contact. Built for those who never back down.",
+    de: "Durch den Kontakt gehen. Gebaut für die, die nie aufgeben.",
+    hr: "Probij se kroz kontakt. Stvoreno za one koji nikad ne odustaju."
+  },
+
   // Footer
   "footer.tagline": { en: "The first lifestyle handball brand. Stubborn by nature.", de: "Die erste Lifestyle-Handballmarke. Stur von Natur aus.", hr: "Prvi lifestyle handball brend. Tvrdoglavi po prirodi." },
   "footer.support": { en: "Support", de: "Support", hr: "Podrška" },
