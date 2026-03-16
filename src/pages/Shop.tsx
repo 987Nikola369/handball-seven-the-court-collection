@@ -647,7 +647,7 @@ const Shop = () => {
                 // Heuristic: check where current design exists
                 if (effectiveCollections['CLASSIC'].includes(currentDesign)) currentCollectionName = 'CLASSIC';
                 else if (effectiveCollections['VINTAGE'].includes(currentDesign)) currentCollectionName = 'VINTAGE';
-                else currentCollectionName = 'KIDS';
+                else currentCollectionName = 'STREET';
             }
 
             const collectionDesigns = effectiveCollections[currentCollectionName] || [];
