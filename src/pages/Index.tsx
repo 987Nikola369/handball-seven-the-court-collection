@@ -4,6 +4,7 @@ import FeaturedCollections from "@/components/FeaturedCollections";
 import BestSellers from "@/components/BestSellers";
 import BrandStory from "@/components/BrandStory";
 import HandballCulture from "@/components/HandballCulture";
+import SevenManifesto from "@/components/SevenManifesto";
 import LifestyleBanner from "@/components/LifestyleBanner";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
@@ -20,6 +21,7 @@ const Index = () => {
         <BestSellers />
         <BrandStory />
         <HandballCulture />
+        <SevenManifesto />
         <LifestyleBanner />
         <Newsletter />
       </main>
