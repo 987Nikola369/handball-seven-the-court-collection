@@ -42,7 +42,7 @@ const elements = [
     num: 7,
     title: "The Pass",
     lines: ["The game moves faster than any player.", "The ball decides everything."],
-    icon: ArrowRightLeft,
+    icon: Send,
   },
 ];
 
