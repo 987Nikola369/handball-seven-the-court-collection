@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, Target, Shield, Fence, Swords, Users, Warehouse } from "lucide-react";
+import { Zap, Target, Shield, Fence, Swords, Users, ArrowRightLeft } from "lucide-react";
 
 const elements = [
   {
@@ -40,9 +40,9 @@ const elements = [
   },
   {
     num: 7,
-    title: "The Hall",
-    lines: ["This game belongs indoors.", "Where noise, sweat and resin live together."],
-    icon: Warehouse,
+    title: "The Pass",
+    lines: ["The game moves faster than any player.", "The ball decides everything."],
+    icon: ArrowRightLeft,
   },
 ];
 
