@@ -71,7 +71,7 @@ const ProductDetail = () => {
       price: product.price,
       size: selectedSize,
       color: product.colors?.[0] || undefined,
-      collection: product.collection || undefined,
+      color: availableColors?.[0]?.name || undefined,
       quantity,
       image: product.image,
     });
