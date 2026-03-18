@@ -113,6 +113,8 @@ const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }:
 
   const designReplacements = useMemo(() => ({}), []);
 
+  const designVariantMap = useMemo(() => buildDesignVariantMap(dbDesignCollections), [dbDesignCollections]);
+
   const productAllowedColors = useMemo(() => {
     const getColColors = (slug: string) => {
       const cols = collectionColorMap[slug];
