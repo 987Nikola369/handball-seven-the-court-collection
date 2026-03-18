@@ -886,10 +886,17 @@ const Shop = () => {
                                 // Get colors allowed by PRODUCT rules (from dashboard product settings)
                                 const productColors = getProductColors(selectedProduct);
 
-                                // Intersect: Only show colors that are BOTH in design rules AND product rules
-                                const availableColors = designColors.filter(dc =>
+                                // Get colors allowed by COLLECTION rules (from dashboard collection settings)
+                                const collectionColors = collectionColorMap[expandedCollection];
+                                const collectionHexes = collectionColors?.map(c => c.hex);
+
+                                // Intersect: design rules AND product rules AND collection rules
+                                let availableColors = designColors.filter(dc =>
                                     productColors.some(pc => pc.hex === dc.hex)
                                 );
+                                if (collectionHexes && collectionHexes.length > 0) {
+                                    availableColors = availableColors.filter(c => collectionHexes.includes(c.hex));
+                                }
 
                                 return availableColors.length > 0 ? (
                                     <div className="flex gap-2 bg-background/5 backdrop-blur-sm p-3 rounded-full border border-white/10 shadow-2xl mb-1">
