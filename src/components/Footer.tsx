@@ -17,14 +17,15 @@ const Footer = () => {
       {/* Features Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 border-b border-border">
         {[
-          { icon: "💥", label: "Foul — No easy plays." },
-          { icon: "⏱", label: "2 Minutes — Take a moment." },
-          { icon: "🟨", label: "Yellow Card — Limited pieces." },
-          { icon: "🟥", label: "Red Card — When it's gone, it's gone." },
+          { icon: "💥", label: "No easy plays.", title: "Foul" },
+          { icon: "✌️", label: "Take a moment.", title: "2 Minutes" },
+          { icon: "🟨", label: "Limited pieces.", title: "Yellow Card" },
+          { icon: "🟥", label: "When it's gone, it's gone.", title: "Red Card" },
         ].map((f, i) => (
-          <div key={i} className="flex items-center justify-center gap-2 py-4 px-2 sm:px-3 border-r border-border last:border-r-0 text-[10px] sm:text-xs font-display uppercase tracking-wider sm:tracking-widest text-foreground/60">
-            <span>{featuresBar?.items?.[i]?.icon || f.icon}</span>
-            <span className="text-center leading-tight">{(typeof featuresBar?.items?.[i]?.label === 'string' ? featuresBar.items[i].label : null) || f.label}</span>
+          <div key={i} className="flex flex-col items-center justify-center gap-1 py-4 px-2 sm:px-3 border-r border-border last:border-r-0 text-center">
+            <span className="text-lg">{featuresBar?.items?.[i]?.icon || f.icon}</span>
+            <span className="font-display text-[10px] sm:text-xs uppercase tracking-wider text-foreground/80">{f.title}</span>
+            <span className="text-[9px] sm:text-[10px] text-foreground/50 leading-tight">{f.label}</span>
           </div>
         ))}
       </div>
