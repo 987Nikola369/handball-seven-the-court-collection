@@ -558,6 +558,25 @@ export default function Content() {
               const existing = typeof section.items[idx].label === "object" ? section.items[idx].label : {};
               section.items[idx] = { ...section.items[idx], label: { ...existing, en: trans.en, de: trans.de } };
             }
+          } else if (fieldName === "page_title") {
+            const existing = typeof section.title === "object" ? section.title : {};
+            section.title = { ...existing, en: trans.en, de: trans.de };
+          } else if (fieldName.startsWith("sec_")) {
+            const parts = fieldName.split("_");
+            const idx = parseInt(parts[1]);
+            const subField = parts[2]; // "title" or "content"
+            if (section.sections?.[idx]) {
+              const existing = typeof section.sections[idx][subField] === "object" ? section.sections[idx][subField] : {};
+              section.sections[idx] = { ...section.sections[idx], [subField]: { ...existing, en: trans.en, de: trans.de } };
+            }
+          } else if (fieldName.startsWith("faq_")) {
+            const parts = fieldName.split("_");
+            const idx = parseInt(parts[1]);
+            const subField = parts[2]; // "question" or "answer"
+            if (section.faq_items?.[idx]) {
+              const existing = typeof section.faq_items[idx][subField] === "object" ? section.faq_items[idx][subField] : {};
+              section.faq_items[idx] = { ...section.faq_items[idx], [subField]: { ...existing, en: trans.en, de: trans.de } };
+            }
           } else {
             const existing = typeof section[fieldName] === "object" ? section[fieldName] : {};
             section[fieldName] = { ...existing, en: trans.en, de: trans.de };
