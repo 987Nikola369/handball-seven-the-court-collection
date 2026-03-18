@@ -427,7 +427,8 @@ const Shop = () => {
         if (availableColors.length > 0 && !availableColors.some(c => c.hex === selectedColor)) {
             setSelectedColor(availableColors[0].hex);
         }
-    }, [designs, activeZone, shopConfig, expandedCollection, collectionColorMap, selectedProduct, selectedColor, SHARED_COLORS, getProductColors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [designs, activeZone, shopConfig, expandedCollection, collectionColorMap, selectedProduct, SHARED_COLORS, getProductColors]);
 
 
     // DB products are now reactive via useMemo - no need for static init
