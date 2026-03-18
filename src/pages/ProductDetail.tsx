@@ -52,8 +52,6 @@ const ProductDetail = () => {
     return storeColors;
   }, [product, storeColors]);
 
-  const product = products.find(p => p.id === id);
-
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -63,7 +61,7 @@ const ProductDetail = () => {
     );
   }
 
-  const related = products.filter(p => p.collection === product.collection && p.id !== product.id).slice(0, 4);
+  const related = products.filter(p => p.id !== product.id).slice(0, 4);
 
   const handleAddToCart = () => {
     if (!selectedSize) return;
