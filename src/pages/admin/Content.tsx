@@ -782,6 +782,105 @@ export default function Content() {
                           ))}
                         </div>
                       )}
+
+                      {SUPPORT_PAGES.includes(section.key) && (
+                        <div className="space-y-5">
+                          {/* Page Title */}
+                          <div>
+                            <label className="block text-white/50 text-xs font-display uppercase tracking-widest mb-2">
+                              Page Title <span className="ml-2 text-primary/60">(HR — auto-translates)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={(() => { const t = contentMap[section.key]?.title; return typeof t === "object" ? t?.hr || "" : t || ""; })()}
+                              onChange={(e) => updateSupportPageTitle(section.key, e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 text-white p-3 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                            />
+                          </div>
+
+                          {/* Sections */}
+                          {getSupportSections(section.key).length > 0 && (
+                            <div className="space-y-4">
+                              <p className="text-white/40 text-xs font-display uppercase tracking-widest">Sections</p>
+                              {getSupportSections(section.key).map((s: any, idx: number) => (
+                                <div key={idx} className="border border-white/10 p-4 space-y-3 relative">
+                                  <button
+                                    onClick={() => removeSupportSection(section.key, idx)}
+                                    className="absolute top-2 right-2 text-white/30 hover:text-destructive transition-colors"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                  <div>
+                                    <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Section Title (HR)</label>
+                                    <input
+                                      type="text"
+                                      value={typeof s.title === "object" ? s.title?.hr || "" : s.title || ""}
+                                      onChange={(e) => updateSupportSection(section.key, idx, "title", e.target.value)}
+                                      className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Content (HR)</label>
+                                    <textarea
+                                      rows={4}
+                                      value={typeof s.content === "object" ? s.content?.hr || "" : s.content || ""}
+                                      onChange={(e) => updateSupportSection(section.key, idx, "content", e.target.value)}
+                                      className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors resize-none font-body text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <button
+                            onClick={() => addSupportSection(section.key)}
+                            className="px-4 py-2 border border-dashed border-white/20 text-white/50 text-xs font-display uppercase tracking-widest hover:bg-white/5 transition-colors w-full"
+                          >
+                            + Add Section
+                          </button>
+
+                          {/* FAQ Items */}
+                          {(section.key === "page_faq" || getSupportFaq(section.key).length > 0) && (
+                            <div className="space-y-4">
+                              <p className="text-white/40 text-xs font-display uppercase tracking-widest">FAQ Items</p>
+                              {getSupportFaq(section.key).map((f: any, idx: number) => (
+                                <div key={idx} className="border border-white/10 p-4 space-y-3 relative">
+                                  <button
+                                    onClick={() => removeSupportFaq(section.key, idx)}
+                                    className="absolute top-2 right-2 text-white/30 hover:text-destructive transition-colors"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                  <div>
+                                    <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Question (HR)</label>
+                                    <input
+                                      type="text"
+                                      value={typeof f.question === "object" ? f.question?.hr || "" : f.question || ""}
+                                      onChange={(e) => updateSupportFaq(section.key, idx, "question", e.target.value)}
+                                      className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Answer (HR)</label>
+                                    <textarea
+                                      rows={3}
+                                      value={typeof f.answer === "object" ? f.answer?.hr || "" : f.answer || ""}
+                                      onChange={(e) => updateSupportFaq(section.key, idx, "answer", e.target.value)}
+                                      className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors resize-none font-body text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                              <button
+                                onClick={() => addSupportFaq(section.key)}
+                                className="px-4 py-2 border border-dashed border-white/20 text-white/50 text-xs font-display uppercase tracking-widest hover:bg-white/5 transition-colors w-full"
+                              >
+                                + Add FAQ Item
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
