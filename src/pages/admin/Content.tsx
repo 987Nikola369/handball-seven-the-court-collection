@@ -545,13 +545,20 @@ export default function Content() {
                                   className="w-full bg-white/5 border border-white/10 text-white p-2 text-center text-lg focus:outline-none focus:border-primary transition-colors"
                                 />
                               </div>
-                              <div className="flex-1">
-                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">
-                                  Label <span className="text-primary/60">(HR)</span>
-                                </label>
+                              <div className="w-32">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Title</label>
                                 <input
                                   type="text"
-                                  value={(typeof item.label === "object" ? item.label.hr : item.label) || ""}
+                                  value={item.title || ""}
+                                  onChange={(e) => updateFeatureItem(idx, "title", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Label</label>
+                                <input
+                                  type="text"
+                                  value={(typeof item.label === "string" ? item.label : item.label?.hr || item.label) || ""}
                                   onChange={(e) => updateFeatureItem(idx, "label", e.target.value)}
                                   className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
                                 />
