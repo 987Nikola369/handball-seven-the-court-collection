@@ -56,12 +56,18 @@ const Hero = () => {
     };
   }, [dbDesignCollections]);
 
-  const productAllowedColors = useMemo(() => ({
-    tshirt: shopConfig?.tshirt?.allowed_colors,
-    hoodie: shopConfig?.hoodie?.allowed_colors,
-    cap: shopConfig?.cap?.allowed_colors,
-    bottle: shopConfig?.bottle?.allowed_colors,
-  }), [shopConfig]);
+  const productAllowedColors = useMemo(() => {
+    const getColColors = (slug: string) => {
+      const cols = collectionColorMap[slug];
+      return cols && cols.length > 0 ? cols.map(c => c.hex) : undefined;
+    };
+    return {
+      tshirt: getColColors('VINTAGE') || getColColors('CLASSIC'),
+      hoodie: getColColors('CLASSIC'),
+      cap: getColColors('STREET') || shopConfig?.cap?.allowed_colors,
+      bottle: shopConfig?.bottle?.allowed_colors
+    };
+  }, [collectionColorMap, shopConfig]);
 
   // Build color->logo map (same as ProductShowcase)
   const colorToLogoMap = useMemo(() => {
