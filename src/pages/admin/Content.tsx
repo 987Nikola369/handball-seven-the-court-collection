@@ -285,7 +285,14 @@ export default function Content() {
 
   const getFeaturesBar = () => {
     const fb = contentMap["features_bar"];
-    if (!fb?.items || !Array.isArray(fb.items)) return [];
+    if (!fb?.items || !Array.isArray(fb.items) || fb.items.length === 0) {
+      return [
+        { icon: "💥", title: "Foul", label: "No easy plays." },
+        { icon: "✌️", title: "2 Minutes", label: "Take a moment." },
+        { icon: "🟨", title: "Yellow Card", label: "Limited pieces." },
+        { icon: "🟥", title: "Red Card", label: "When it's gone, it's gone." },
+      ];
+    }
     return fb.items;
   };
 
