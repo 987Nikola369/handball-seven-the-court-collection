@@ -59,6 +59,10 @@ const App = () => (
                 <Route path="/account" element={<Account />} />
                 <Route path="/checkout/success" element={<CheckoutSuccess />} />
                 <Route path="/checkout/canceled" element={<CheckoutCanceled />} />
+                <Route path="/shipping" element={<Shipping />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<RequireAdmin><Dashboard /></RequireAdmin>} />
