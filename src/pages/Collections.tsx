@@ -17,13 +17,21 @@ const Collections = () => {
       <CartDrawer />
       <main className="pt-20">
         <div className="relative h-[30vh] sm:h-[40vh] md:h-[50vh] overflow-hidden">
-          <img src={collectionsImg} alt="Collections" className="w-full h-full object-cover" />
+          <motion.img
+            src={collectionsImg}
+            alt="Collections"
+            className="w-full h-full object-cover"
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.2 }}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 px-5 md:px-12 lg:px-20 pb-6 sm:pb-10">
             <motion.h1
               className="text-2xl sm:text-3xl md:text-5xl font-display uppercase tracking-[0.15em] sm:tracking-[0.2em]"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
             >
               {t("featured.title")}
             </motion.h1>
@@ -36,9 +44,10 @@ const Collections = () => {
             {(collections ?? []).map((col, i) => (
               <motion.div
                 key={col.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12, duration: 0.6 }}
                 className="text-left border border-border p-5 sm:p-6 md:p-8 hover:border-primary/30 transition-all duration-300 active:bg-muted/30"
               >
                 <h3 className="font-display uppercase tracking-wider text-base sm:text-lg mb-2">{col.name}</h3>
@@ -49,7 +58,14 @@ const Collections = () => {
         </div>
 
         {/* 3D Product Showcase */}
-        <ProductShowcase height="h-[50vh] sm:h-[65vh] md:h-[80vh]" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <ProductShowcase height="h-[50vh] sm:h-[65vh] md:h-[80vh]" />
+        </motion.div>
       </main>
       <Footer />
     </div>

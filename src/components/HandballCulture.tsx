@@ -1,6 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Zap, Target, Shield, Fence, Swords, Users, Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import ScrollCharReveal from "@/components/ScrollCharReveal";
 
 const defaultElements = [
   { title: "Fast Break", line1: "Speed changes everything.", line2: "The game can turn in seconds.", icon: Zap },
@@ -30,6 +32,10 @@ const HandballCulture = () => {
     ? cmsData.elements.map((el, i) => ({ ...el, icon: icons[i] }))
     : defaultElements;
 
+  // Split into first 6 and the 7th
+  const firstSix = elements.slice(0, 6);
+  const seventh = elements[6];
+
   return (
     <section className="px-5 md:px-12 lg:px-20 py-16 md:py-28">
       <motion.div
@@ -43,55 +49,81 @@ const HandballCulture = () => {
         </h2>
       </motion.div>
 
-      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
-        {elements.map((el, i) => {
-          const Icon = el.icon;
+      <div className="max-w-5xl mx-auto">
+        {/* First 6 cards in 3-col grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
+          {firstSix.map((el, i) => {
+            const Icon = el.icon;
+            return (
+              <motion.div
+                key={i}
+                className="group relative border border-border p-6 sm:p-8 hover:border-primary/40 transition-all duration-500"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
+              >
+                <div className="absolute inset-0 bg-primary/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative z-10 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-3xl md:text-4xl text-primary/20 leading-none">
+                      {i + 1}
+                    </span>
+                    <Icon className="w-6 h-6 text-primary transition-transform duration-500 group-hover:scale-110" strokeWidth={1.8} />
+                  </div>
+                  <h3 className="font-display uppercase text-sm sm:text-base tracking-wider">
+                    {el.title}
+                  </h3>
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{el.line1}</p>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{el.line2}</p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* 7th card centered */}
+        {seventh && (() => {
+          const Icon = seventh.icon;
           return (
-            <motion.div
-              key={i}
-              className="group relative border border-border p-6 sm:p-8 hover:border-primary/40 transition-all duration-500"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.6 }}
-            >
-              <div className="absolute inset-0 bg-primary/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative z-10 flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="font-display text-3xl md:text-4xl text-primary/20 leading-none">
-                    {i + 1}
-                  </span>
-                  <Icon className="w-6 h-6 text-primary transition-transform duration-500 group-hover:scale-110" strokeWidth={1.8} />
+            <div className="flex justify-center mt-5 md:mt-7">
+              <motion.div
+                className="group relative border border-border p-6 sm:p-8 hover:border-primary/40 transition-all duration-500 w-full sm:w-1/2 lg:w-1/3"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.48, duration: 0.6 }}
+              >
+                <div className="absolute inset-0 bg-primary/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative z-10 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-3xl md:text-4xl text-primary/20 leading-none">7</span>
+                    <Icon className="w-6 h-6 text-primary transition-transform duration-500 group-hover:scale-110" strokeWidth={1.8} />
+                  </div>
+                  <h3 className="font-display uppercase text-sm sm:text-base tracking-wider">{seventh.title}</h3>
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{seventh.line1}</p>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{seventh.line2}</p>
+                  </div>
                 </div>
-
-                <h3 className="font-display uppercase text-sm sm:text-base tracking-wider">
-                  {el.title}
-                </h3>
-
-                <div className="space-y-1">
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{el.line1}</p>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{el.line2}</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           );
-        })}
+        })()}
 
-        <motion.div
-          className="sm:col-span-2 lg:col-span-3 text-center pt-8 md:pt-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-        >
-          <p className="font-display uppercase text-lg sm:text-xl md:text-2xl tracking-[0.15em] text-foreground">
-            {closingLine1}
-          </p>
-          <p className="font-display uppercase text-lg sm:text-xl md:text-2xl tracking-[0.15em] text-primary mt-1">
-            {closingLine2}
-          </p>
-        </motion.div>
+        {/* Closing lines with per-character animation */}
+        <div className="text-center pt-8 md:pt-14 space-y-1">
+          <ScrollCharReveal
+            text={closingLine1}
+            className="font-display uppercase text-lg sm:text-xl md:text-2xl tracking-[0.15em] text-foreground block"
+          />
+          <ScrollCharReveal
+            text={closingLine2}
+            className="font-display uppercase text-lg sm:text-xl md:text-2xl tracking-[0.15em] text-primary block"
+          />
+        </div>
       </div>
     </section>
   );
