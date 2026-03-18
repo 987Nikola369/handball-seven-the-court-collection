@@ -819,12 +819,20 @@ const Shop = () => {
                             ], [effectiveCollections])}
                             designReplacements={useMemo(() => ({}), [])}
                             onCycleDesignUpdate={handleCycleDesignUpdate}
-                            productAllowedColors={useMemo(() => ({
-                                tshirt: shopConfig?.tshirt?.allowed_colors,
-                                hoodie: shopConfig?.hoodie?.allowed_colors,
-                                cap: shopConfig?.cap?.allowed_colors,
-                                bottle: shopConfig?.bottle?.allowed_colors
-                            }), [shopConfig])}
+                            productAllowedColors={useMemo(() => {
+                                // Build per-product allowed colors from collection constraints
+                                const getColColors = (slug: string) => {
+                                    const cols = collectionColorMap[slug];
+                                    return cols && cols.length > 0 ? cols.map(c => c.hex) : undefined;
+                                };
+                                // T-shirt back uses VINTAGE, Hoodie back uses CLASSIC, Cap/Bottle use all designs
+                                return {
+                                    tshirt: getColColors('VINTAGE') || getColColors('CLASSIC'),
+                                    hoodie: getColColors('CLASSIC'),
+                                    cap: getColColors('STREET') || shopConfig?.cap?.allowed_colors,
+                                    bottle: shopConfig?.bottle?.allowed_colors
+                                };
+                            }, [collectionColorMap, shopConfig])}
                             productRestrictedDesigns={useMemo(() => ({
                                 tshirt: shopConfig?.tshirt?.restricted_designs,
                                 hoodie: shopConfig?.hoodie?.restricted_designs,
