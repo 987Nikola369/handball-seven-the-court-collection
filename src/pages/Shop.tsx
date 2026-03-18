@@ -403,18 +403,25 @@ const Shop = () => {
         }
     }, [searchParams]);
 
-    // Auto-update color when design changes and current color is not available
+    // Auto-update color when design or collection changes and current color is not available
     useEffect(() => {
         const currentDesignUrl = designs[activeZone];
         if (!currentDesignUrl) return;
 
-        const availableColors = getDesignColorsFromConfig(currentDesignUrl);
+        let availableColors = getDesignColorsFromConfig(currentDesignUrl);
+
+        // Also intersect with collection colors
+        const collectionColors = collectionColorMap[expandedCollection];
+        if (collectionColors && collectionColors.length > 0) {
+            const collectionHexes = collectionColors.map(c => c.hex);
+            availableColors = availableColors.filter(c => collectionHexes.includes(c.hex));
+        }
 
         // If current color is not in available colors, switch to first available
         if (availableColors.length > 0 && !availableColors.some(c => c.hex === selectedColor)) {
             setSelectedColor(availableColors[0].hex);
         }
-    }, [designs, activeZone, shopConfig]);
+    }, [designs, activeZone, shopConfig, expandedCollection, collectionColorMap]);
 
 
     // DB products are now reactive via useMemo - no need for static init
