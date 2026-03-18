@@ -500,6 +500,25 @@ export default function Content() {
       });
     }
 
+    // Support pages: collect title, sections, and FAQ items
+    if (SUPPORT_PAGES.includes(sectionKey)) {
+      if (typeof section.title === "object" && section.title?.hr) {
+        texts["page_title"] = section.title.hr;
+      }
+      if (Array.isArray(section.sections)) {
+        section.sections.forEach((s: any, idx: number) => {
+          if (typeof s.title === "object" && s.title?.hr) texts[`sec_${idx}_title`] = s.title.hr;
+          if (typeof s.content === "object" && s.content?.hr) texts[`sec_${idx}_content`] = s.content.hr;
+        });
+      }
+      if (Array.isArray(section.faq_items)) {
+        section.faq_items.forEach((f: any, idx: number) => {
+          if (typeof f.question === "object" && f.question?.hr) texts[`faq_${idx}_question`] = f.question.hr;
+          if (typeof f.answer === "object" && f.answer?.hr) texts[`faq_${idx}_answer`] = f.answer.hr;
+        });
+      }
+    }
+
     return texts;
   };
 
