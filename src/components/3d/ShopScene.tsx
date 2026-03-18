@@ -896,8 +896,25 @@ const ProductModel = ({
     const backUrl = shouldHideDesigns ? null :
         ((isCustomizing && hasUserInteracted && designs?.back) ? designs.back : backCycleUrl);
 
-    const safeFrontUrl = frontUrl || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-    const safeBackUrl = backUrl || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+    // Resolve light/dark variant based on current color
+    const resolveVariantUrl = (url: string | null): string | null => {
+        if (!url || !designVariantMap) return url;
+        const asset = designVariantMap[url];
+        if (!asset) return url;
+        const currentHex = (isCustomizing && hasUserInteracted && color)
+            ? color.toLowerCase()
+            : ('#' + targetColorRef.current.getHexString()).toLowerCase();
+        // Check if current color needs light version
+        if (asset.lightColors?.length && asset.lightUrl) {
+            if (asset.lightColors.some(c => c.toLowerCase() === currentHex)) {
+                return asset.lightUrl;
+            }
+        }
+        return asset.url || url;
+    };
+
+    const safeFrontUrl = resolveVariantUrl(frontUrl) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+    const safeBackUrl = resolveVariantUrl(backUrl) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
     // Track previous resolved designs to detect changes (FrontUrl/BackUrl)
     // This covers BOTH manual selection AND auto-sync changes (e.g. Logo color swap)
