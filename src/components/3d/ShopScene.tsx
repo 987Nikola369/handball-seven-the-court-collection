@@ -225,6 +225,8 @@ interface ProductModelProps {
     activeColorsRef?: React.MutableRefObject<Record<string, string>>;
     onDesignsUpdate?: (designs: { front: string; back: string }) => void;
     designReplacements?: Record<string, string>;
+    /** Map from design URL → DesignAsset for light/dark variant resolution */
+    designVariantMap?: Record<string, { url: string; lightUrl?: string; darkColors?: string[]; lightColors?: string[] }>;
 }
 
 // Helper for product type detection (using includes for multi-line labels)
