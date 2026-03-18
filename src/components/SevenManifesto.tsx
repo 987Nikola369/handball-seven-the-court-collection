@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useI18n } from "@/lib/i18n";
 
-const manifesto = [
+const defaultManifesto = [
   { text: "Seven is not just a number.", style: "hero" },
   { text: "Seven is the game.", style: "hero" },
   { text: "7 days in a week.", style: "stat" },
@@ -20,6 +21,10 @@ const manifesto = [
 ];
 
 const SevenManifesto = () => {
+  const { getSiteContent } = useI18n();
+  const cmsData = getSiteContent("manifesto") as { lines?: { text: string; style: string }[] } | undefined;
+  const manifesto = (cmsData?.lines && cmsData.lines.length > 0) ? cmsData.lines : defaultManifesto;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,

@@ -121,6 +121,11 @@ const SECTIONS: { key: string; label: string; fields: FieldConfig[] }[] = [
     label: "Features Bar (Footer Strip)",
     fields: [],
   },
+  {
+    key: "manifesto",
+    label: "Seven Manifesto",
+    fields: [],
+  },
 ];
 
 type ContentData = Record<string, any>;
@@ -280,7 +285,14 @@ export default function Content() {
 
   const getFeaturesBar = () => {
     const fb = contentMap["features_bar"];
-    if (!fb?.items || !Array.isArray(fb.items)) return [];
+    if (!fb?.items || !Array.isArray(fb.items) || fb.items.length === 0) {
+      return [
+        { icon: "💥", title: "Foul", label: "No easy plays." },
+        { icon: "✌️", title: "2 Minutes", label: "Take a moment." },
+        { icon: "🟨", title: "Yellow Card", label: "Limited pieces." },
+        { icon: "🟥", title: "Red Card", label: "When it's gone, it's gone." },
+      ];
+    }
     return fb.items;
   };
 
@@ -311,16 +323,49 @@ export default function Content() {
     });
   };
 
-  const updateFeatureItem = (index: number, field: "icon" | "label", value: string) => {
+  const getManifestoLines = () => {
+    const m = contentMap["manifesto"];
+    if (!m?.lines || !Array.isArray(m.lines)) {
+      return [
+        { text: "Seven is not just a number.", style: "hero" },
+        { text: "Seven is the game.", style: "hero" },
+        { text: "7 days in a week.", style: "stat" },
+        { text: "7 players on the court.", style: "stat" },
+        { text: "7 positions in handball.", style: "stat" },
+        { text: "The game was built around seven.", style: "accent" },
+        { text: "So is this brand.", style: "accent" },
+        { text: "From the wings to the line.", style: "normal" },
+        { text: "From the backcourt to the goal.", style: "normal" },
+        { text: "Every player has a role.", style: "normal" },
+        { text: "Every role has a story.", style: "normal" },
+        { text: "This is not just apparel.", style: "accent" },
+        { text: "This is the culture of the game.", style: "accent" },
+        { text: "Seven players. One court. One perfect game.", style: "hero" },
+        { text: "Handball Seven.", style: "brand" },
+      ];
+    }
+    return m.lines;
+  };
+
+  const updateManifestoLine = (index: number, field: "text" | "style", value: string) => {
+    setContentMap((prev) => {
+      const m = { ...(prev["manifesto"] || {}) };
+      const lines = [...(m.lines || getManifestoLines())];
+      lines[index] = { ...lines[index], [field]: value };
+      m.lines = lines;
+      return { ...prev, manifesto: m };
+    });
+  };
+
+  const updateFeatureItem = (index: number, field: "icon" | "title" | "label", value: string) => {
     setContentMap((prev) => {
       const fb = { ...(prev["features_bar"] || {}) };
-      const items = [...(fb.items || [])];
+      const items = [...(fb.items || getFeaturesBar())];
       items[index] = { ...items[index] };
-      if (field === "icon") {
-        items[index].icon = value;
+      if (field === "icon" || field === "title") {
+        items[index][field] = value;
       } else {
-        const existing = typeof items[index].label === "object" ? items[index].label : {};
-        items[index].label = { ...existing, hr: value };
+        items[index].label = value;
       }
       fb.items = items;
       return { ...prev, features_bar: fb };
@@ -500,14 +545,54 @@ export default function Content() {
                                   className="w-full bg-white/5 border border-white/10 text-white p-2 text-center text-lg focus:outline-none focus:border-primary transition-colors"
                                 />
                               </div>
-                              <div className="flex-1">
-                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">
-                                  Label <span className="text-primary/60">(HR)</span>
-                                </label>
+                              <div className="w-32">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Title</label>
                                 <input
                                   type="text"
-                                  value={(typeof item.label === "object" ? item.label.hr : item.label) || ""}
+                                  value={item.title || ""}
+                                  onChange={(e) => updateFeatureItem(idx, "title", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Label</label>
+                                <input
+                                  type="text"
+                                  value={(typeof item.label === "string" ? item.label : item.label?.hr || item.label) || ""}
                                   onChange={(e) => updateFeatureItem(idx, "label", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {section.key === "manifesto" && (
+                        <div className="space-y-3">
+                          <p className="text-white/40 text-xs font-display uppercase tracking-widest">Manifesto lines (text + style per line)</p>
+                          {getManifestoLines().map((line: any, idx: number) => (
+                            <div key={idx} className="flex gap-3 items-start">
+                              <div className="w-24">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Style</label>
+                                <select
+                                  value={line.style || "normal"}
+                                  onChange={(e) => updateManifestoLine(idx, "style", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 text-xs focus:outline-none focus:border-primary transition-colors"
+                                >
+                                  <option value="hero">Hero</option>
+                                  <option value="brand">Brand</option>
+                                  <option value="accent">Accent</option>
+                                  <option value="stat">Stat</option>
+                                  <option value="normal">Normal</option>
+                                </select>
+                              </div>
+                              <div className="flex-1">
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Text</label>
+                                <input
+                                  type="text"
+                                  value={line.text || ""}
+                                  onChange={(e) => updateManifestoLine(idx, "text", e.target.value)}
                                   className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
                                 />
                               </div>
