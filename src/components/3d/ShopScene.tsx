@@ -269,7 +269,8 @@ const ProductModel = ({
     productId,
     activeColorsRef,
     onDesignsUpdate,
-    designReplacements
+    designReplacements,
+    designVariantMap
 }: ProductModelProps & { isLoaded?: boolean; onLoadComplete?: () => void }) => {
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
