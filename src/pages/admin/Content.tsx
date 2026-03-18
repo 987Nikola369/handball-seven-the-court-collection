@@ -357,16 +357,15 @@ export default function Content() {
     });
   };
 
-  const updateFeatureItem = (index: number, field: "icon" | "label", value: string) => {
+  const updateFeatureItem = (index: number, field: "icon" | "title" | "label", value: string) => {
     setContentMap((prev) => {
       const fb = { ...(prev["features_bar"] || {}) };
-      const items = [...(fb.items || [])];
+      const items = [...(fb.items || getFeaturesBar())];
       items[index] = { ...items[index] };
-      if (field === "icon") {
-        items[index].icon = value;
+      if (field === "icon" || field === "title") {
+        items[index][field] = value;
       } else {
-        const existing = typeof items[index].label === "object" ? items[index].label : {};
-        items[index].label = { ...existing, hr: value };
+        items[index].label = value;
       }
       fb.items = items;
       return { ...prev, features_bar: fb };
