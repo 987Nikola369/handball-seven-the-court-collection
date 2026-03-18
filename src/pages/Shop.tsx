@@ -161,6 +161,43 @@ const Shop = () => {
     const { t } = useI18n();
     const { collections: dbDesignCollections } = useDesignCollections();
     const { data: dbProducts } = useDbProducts();
+    const { data: storeColors } = useStoreColors();
+    const { data: storeSizes } = useStoreSizes();
+
+    // Dynamic SHARED_COLORS from store catalog (with fallback)
+    const SHARED_COLORS = useMemo(() => {
+        if (storeColors && storeColors.length > 0) {
+            return storeColors.map(c => ({ name: c.name, hex: c.hex }));
+        }
+        return FALLBACK_COLORS;
+    }, [storeColors]);
+
+    // Dynamic sizes from store catalog (with fallback)  
+    const SIZES = useMemo(() => {
+        if (storeSizes && storeSizes.length > 0) {
+            return storeSizes.map(s => s.name);
+        }
+        return FALLBACK_SIZES;
+    }, [storeSizes]);
+
+    // Get product-level allowed colors (intersection of store colors and product DB colors)
+    const getProductColors = useCallback((productSlug: string) => {
+        const dbProduct = dbProducts?.find(p => p.slug === productSlug);
+        if (dbProduct?.colors && dbProduct.colors.length > 0) {
+            // Intersection: only colors that are both in store catalog AND product settings
+            return SHARED_COLORS.filter(sc => dbProduct.colors!.includes(sc.name));
+        }
+        return SHARED_COLORS; // If no product-level restriction, all store colors
+    }, [dbProducts, SHARED_COLORS]);
+
+    // Get product-level allowed sizes (intersection of store sizes and product DB sizes)
+    const getProductSizes = useCallback((productSlug: string) => {
+        const dbProduct = dbProducts?.find(p => p.slug === productSlug);
+        if (dbProduct?.sizes && dbProduct.sizes.length > 0) {
+            return SIZES.filter(s => dbProduct.sizes!.includes(s));
+        }
+        return SIZES;
+    }, [dbProducts, SIZES]);
 
     // Merge DB product data into INITIAL_PRODUCTS (prices, names, descriptions)
     const products = useMemo(() => {
