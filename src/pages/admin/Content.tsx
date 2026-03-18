@@ -101,9 +101,19 @@ const SECTIONS: { key: string; label: string; fields: FieldConfig[] }[] = [
     label: "Social Media Links",
     fields: [
       { name: "instagram", label: "Instagram URL", type: "text", i18n: false },
+      { name: "whatsapp", label: "WhatsApp Number", type: "text", i18n: false },
       { name: "facebook", label: "Facebook URL", type: "text", i18n: false },
       { name: "tiktok", label: "TikTok URL", type: "text", i18n: false },
       { name: "youtube", label: "YouTube URL", type: "text", i18n: false },
+    ],
+  },
+  {
+    key: "handball_elements",
+    label: "Seven Elements of Handball",
+    fields: [
+      { name: "section_title", label: "Section Title", type: "text", i18n: false },
+      { name: "closing_line_1", label: "Closing Line 1", type: "text", i18n: false },
+      { name: "closing_line_2", label: "Closing Line 2", type: "text", i18n: false },
     ],
   },
   {
@@ -272,6 +282,33 @@ export default function Content() {
     const fb = contentMap["features_bar"];
     if (!fb?.items || !Array.isArray(fb.items)) return [];
     return fb.items;
+  };
+
+  const getHandballElements = () => {
+    const he = contentMap["handball_elements"];
+    if (!he?.elements || !Array.isArray(he.elements)) {
+      // Return defaults
+      return [
+        { title: "Fast Break", line1: "Speed changes everything.", line2: "The game can turn in seconds." },
+        { title: "The Shot", line1: "Power. Precision. Instinct.", line2: "Every attack ends with a moment that decides it all." },
+        { title: "The Save", line1: "One reaction. One movement.", line2: "Goalkeepers change the course of the game." },
+        { title: "Defense", line1: "The heart of the game.", line2: "Every attack begins with a wall that refuses to break." },
+        { title: "Contact", line1: "Handball is built on physical battles.", line2: "Strength, balance and courage decide every duel." },
+        { title: "The System", line1: "Seven players. One structure.", line2: "Every role matters." },
+        { title: "The Pass", line1: "The game moves faster than any player.", line2: "The ball decides everything." },
+      ];
+    }
+    return he.elements;
+  };
+
+  const updateHandballElement = (index: number, field: "title" | "line1" | "line2", value: string) => {
+    setContentMap((prev) => {
+      const he = { ...(prev["handball_elements"] || {}) };
+      const elements = [...(he.elements || getHandballElements())];
+      elements[index] = { ...elements[index], [field]: value };
+      he.elements = elements;
+      return { ...prev, handball_elements: he };
+    });
   };
 
   const updateFeatureItem = (index: number, field: "icon" | "label", value: string) => {
@@ -471,6 +508,46 @@ export default function Content() {
                                   type="text"
                                   value={(typeof item.label === "object" ? item.label.hr : item.label) || ""}
                                   onChange={(e) => updateFeatureItem(idx, "label", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {section.key === "handball_elements" && (
+                        <div className="space-y-4">
+                          <p className="text-white/40 text-xs font-display uppercase tracking-widest">7 Elements (title + 2 lines each)</p>
+                          {getHandballElements().map((el: any, idx: number) => (
+                            <div key={idx} className="border border-white/10 p-4 space-y-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-primary/40 font-display text-lg font-bold">{idx + 1}</span>
+                              </div>
+                              <div>
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Title</label>
+                                <input
+                                  type="text"
+                                  value={el.title || ""}
+                                  onChange={(e) => updateHandballElement(idx, "title", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Line 1</label>
+                                <input
+                                  type="text"
+                                  value={el.line1 || ""}
+                                  onChange={(e) => updateHandballElement(idx, "line1", e.target.value)}
+                                  className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Line 2</label>
+                                <input
+                                  type="text"
+                                  value={el.line2 || ""}
+                                  onChange={(e) => updateHandballElement(idx, "line2", e.target.value)}
                                   className="w-full bg-white/5 border border-white/10 text-white p-2 focus:outline-none focus:border-primary transition-colors font-body text-sm"
                                 />
                               </div>
