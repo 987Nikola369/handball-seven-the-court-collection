@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { useI18n } from "@/lib/i18n";
+import ScrollCharReveal from "@/components/ScrollCharReveal";
 
 const defaultManifesto = [
   { text: "Seven is not just a number.", style: "hero" },
@@ -66,15 +67,6 @@ const ManifestoLine = ({
   line: { text: string; style: string };
   index: number;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.92", "start 0.4"],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const y = useTransform(scrollYProgress, [0, 1], [40, 0]);
-
   const getClasses = () => {
     switch (line.style) {
       case "hero":
@@ -98,18 +90,24 @@ const ManifestoLine = ({
   };
 
   return (
-    <motion.div
-      ref={ref}
-      style={{ opacity, y }}
-      className={`${getAlignment()}`}
-    >
-      <span className={getClasses()}>{line.text}</span>
+    <div className={`${getAlignment()}`}>
+      <ScrollCharReveal
+        text={line.text}
+        className={getClasses()}
+        charDelay={0.025}
+      />
       {line.style === "brand" && (
-        <div className="mt-6 flex justify-center">
+        <motion.div
+          className="mt-6 flex justify-center"
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
           <div className="w-16 h-px bg-primary/40" />
-        </div>
+        </motion.div>
       )}
-    </motion.div>
+    </div>
   );
 };
 
