@@ -880,9 +880,8 @@ const Shop = () => {
                                 // Get colors allowed by DESIGN rules (from API config)
                                 const designColors = getDesignColorsFromConfig(currentDesign);
 
-                                // Get colors allowed by PRODUCT rules (from API config)
-                                const allowedProductColorHexes = getAllowedColors(selectedProduct);
-                                const productColors = SHARED_COLORS.filter(c => allowedProductColorHexes.includes(c.hex));
+                                // Get colors allowed by PRODUCT rules (from dashboard product settings)
+                                const productColors = getProductColors(selectedProduct);
 
                                 // Intersect: Only show colors that are BOTH in design rules AND product rules
                                 const availableColors = designColors.filter(dc =>

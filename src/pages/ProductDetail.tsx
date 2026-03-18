@@ -9,6 +9,7 @@ import { ProductGrid } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
+import { useStoreSizes, useStoreColors } from "@/hooks/useStoreCatalog";
 
 const ProductDetail = () => {
   const { id } = useParams();
