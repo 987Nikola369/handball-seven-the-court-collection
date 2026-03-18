@@ -406,11 +406,17 @@ const Shop = () => {
     // Auto-update color when design or collection changes and current color is not available
     useEffect(() => {
         const currentDesignUrl = designs[activeZone];
-        if (!currentDesignUrl) return;
 
-        let availableColors = getDesignColorsFromConfig(currentDesignUrl);
+        // Start with design-level color restrictions (if a design is selected)
+        let availableColors = currentDesignUrl
+            ? getDesignColorsFromConfig(currentDesignUrl)
+            : [...SHARED_COLORS];
 
-        // Also intersect with collection colors
+        // Intersect with product-level colors
+        const productColors = getProductColors(selectedProduct);
+        availableColors = availableColors.filter(c => productColors.some(pc => pc.hex === c.hex));
+
+        // Intersect with collection colors
         const collectionColors = collectionColorMap[expandedCollection];
         if (collectionColors && collectionColors.length > 0) {
             const collectionHexes = collectionColors.map(c => c.hex);
@@ -421,7 +427,7 @@ const Shop = () => {
         if (availableColors.length > 0 && !availableColors.some(c => c.hex === selectedColor)) {
             setSelectedColor(availableColors[0].hex);
         }
-    }, [designs, activeZone, shopConfig, expandedCollection, collectionColorMap]);
+    }, [designs, activeZone, shopConfig, expandedCollection, collectionColorMap, selectedProduct, selectedColor, SHARED_COLORS, getProductColors]);
 
 
     // DB products are now reactive via useMemo - no need for static init
@@ -827,19 +833,27 @@ const Shop = () => {
                             designReplacements={useMemo(() => ({}), [])}
                             onCycleDesignUpdate={handleCycleDesignUpdate}
                             productAllowedColors={useMemo(() => {
-                                // Build per-product allowed colors from collection constraints
-                                const getColColors = (slug: string) => {
-                                    const cols = collectionColorMap[slug];
-                                    return cols && cols.length > 0 ? cols.map(c => c.hex) : undefined;
+                                // Build per-product allowed colors intersecting product-level + collection-level constraints
+                                const getColors = (productSlug: string, collectionSlug: string) => {
+                                    // Product-level colors
+                                    const prodColors = getProductColors(productSlug);
+                                    let hexes = prodColors.map(c => c.hex);
+
+                                    // Collection-level colors
+                                    const cols = collectionColorMap[collectionSlug];
+                                    if (cols && cols.length > 0) {
+                                        const colHexes = cols.map(c => c.hex);
+                                        hexes = hexes.filter(h => colHexes.includes(h));
+                                    }
+                                    return hexes.length > 0 ? hexes : undefined;
                                 };
-                                // T-shirt back uses VINTAGE, Hoodie back uses CLASSIC, Cap/Bottle use all designs
                                 return {
-                                    tshirt: getColColors('VINTAGE') || getColColors('CLASSIC'),
-                                    hoodie: getColColors('CLASSIC'),
-                                    cap: getColColors('STREET') || shopConfig?.cap?.allowed_colors,
-                                    bottle: shopConfig?.bottle?.allowed_colors
+                                    tshirt: getColors('tshirt', 'VINTAGE') || getColors('tshirt', 'CLASSIC'),
+                                    hoodie: getColors('hoodie', 'CLASSIC'),
+                                    cap: getColors('cap', 'STREET') || shopConfig?.cap?.allowed_colors,
+                                    bottle: getColors('bottle', 'STREET') || ['#231f20', '#ffffff']
                                 };
-                            }, [collectionColorMap, shopConfig])}
+                            }, [collectionColorMap, shopConfig, getProductColors])}
                             productRestrictedDesigns={useMemo(() => ({
                                 tshirt: shopConfig?.tshirt?.restricted_designs,
                                 hoodie: shopConfig?.hoodie?.restricted_designs,
