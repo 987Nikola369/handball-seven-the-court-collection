@@ -81,17 +81,17 @@ const findDesignUrlByFilename = (filename: string): string | null => {
     return match || null;
 };
 
-// Product Data
-const SHARED_COLORS = [
+// Static fallback colors (used if DB hasn't loaded yet)
+const FALLBACK_COLORS = [
     { name: 'Crna', hex: '#231f20' },
     { name: 'Siva', hex: '#d1d5db' },
-    { name: 'Tirkizna', hex: '#00ab98' }, // Teal
-    { name: 'Cijan', hex: '#00aeef' },    // Light Blue
-    { name: 'Plava', hex: '#387bbf' },    // Royal Blue
-    { name: 'Ljubičasta', hex: '#8358a4' }, // Purple
+    { name: 'Tirkizna', hex: '#00ab98' },
+    { name: 'Cijan', hex: '#00aeef' },
+    { name: 'Plava', hex: '#387bbf' },
+    { name: 'Ljubičasta', hex: '#8358a4' },
     { name: 'Bijela', hex: '#ffffff' },
-    { name: 'Roza', hex: '#e78fab' },     // Pink
-    { name: 'Mint', hex: '#a1d7c0' }      // Light Green
+    { name: 'Roza', hex: '#e78fab' },
+    { name: 'Mint', hex: '#a1d7c0' }
 ];
 
 // Design to Color Availability Map now comes from shop config API
@@ -106,7 +106,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Tee',
         price: 25.00,
         description: 'Premium cotton tee with your choice of design. Made for the court and the street.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -118,7 +118,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Hoodie',
         price: 45.00,
         description: 'Premium heavyweight hoodie. Built for the stubborn, designed for the court.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -130,7 +130,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Cap',
         price: 20.00,
         description: 'Structured cap with Handball Seven branding. One size fits all.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -139,7 +139,7 @@ const INITIAL_PRODUCTS = {
     },
     bottle: {
         id: 'bottle-001',
-        name: 'Court Thermal Bottle', // Updated
+        name: 'Court Thermal Bottle',
         price: 20.00,
         description: 'Premium stainless steel thermal bottle. Keeps hot 12h, cold 24h.',
         colors: [
@@ -154,7 +154,7 @@ const INITIAL_PRODUCTS = {
     }
 };
 
-const SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
+const FALLBACK_SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
 
 const Shop = () => {
     // i18n
