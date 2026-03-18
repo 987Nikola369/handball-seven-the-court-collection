@@ -2,7 +2,7 @@ export type Product = {
   id: string;
   name: string;
   price: number;
-  collection: "classic" | "vintage" | "street";
+  collection?: "classic" | "vintage" | "street";
   badge?: "new" | "bestseller" | "vintage";
   sizes: string[];
   colors: string[];

@@ -10,6 +10,7 @@ import { useShopConfig } from '@/hooks/useShopConfig';
 import { useI18n } from '@/lib/i18n';
 import { useDesignCollections } from '@/hooks/useDesignCollections';
 import { useProducts as useDbProducts } from '@/hooks/useProducts';
+import { useStoreColors, useStoreSizes } from '@/hooks/useStoreCatalog';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -80,17 +81,17 @@ const findDesignUrlByFilename = (filename: string): string | null => {
     return match || null;
 };
 
-// Product Data
-const SHARED_COLORS = [
+// Static fallback colors (used if DB hasn't loaded yet)
+const FALLBACK_COLORS = [
     { name: 'Crna', hex: '#231f20' },
     { name: 'Siva', hex: '#d1d5db' },
-    { name: 'Tirkizna', hex: '#00ab98' }, // Teal
-    { name: 'Cijan', hex: '#00aeef' },    // Light Blue
-    { name: 'Plava', hex: '#387bbf' },    // Royal Blue
-    { name: 'Ljubičasta', hex: '#8358a4' }, // Purple
+    { name: 'Tirkizna', hex: '#00ab98' },
+    { name: 'Cijan', hex: '#00aeef' },
+    { name: 'Plava', hex: '#387bbf' },
+    { name: 'Ljubičasta', hex: '#8358a4' },
     { name: 'Bijela', hex: '#ffffff' },
-    { name: 'Roza', hex: '#e78fab' },     // Pink
-    { name: 'Mint', hex: '#a1d7c0' }      // Light Green
+    { name: 'Roza', hex: '#e78fab' },
+    { name: 'Mint', hex: '#a1d7c0' }
 ];
 
 // Design to Color Availability Map now comes from shop config API
@@ -105,7 +106,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Tee',
         price: 25.00,
         description: 'Premium cotton tee with your choice of design. Made for the court and the street.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -117,7 +118,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Hoodie',
         price: 45.00,
         description: 'Premium heavyweight hoodie. Built for the stubborn, designed for the court.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -129,7 +130,7 @@ const INITIAL_PRODUCTS = {
         name: 'Court Classic Cap',
         price: 20.00,
         description: 'Structured cap with Handball Seven branding. One size fits all.',
-        colors: SHARED_COLORS,
+        colors: FALLBACK_COLORS,
         stockStatus: 'instock',
         stockQuantity: null as number | null,
         averageRating: 0,
@@ -138,7 +139,7 @@ const INITIAL_PRODUCTS = {
     },
     bottle: {
         id: 'bottle-001',
-        name: 'Court Thermal Bottle', // Updated
+        name: 'Court Thermal Bottle',
         price: 20.00,
         description: 'Premium stainless steel thermal bottle. Keeps hot 12h, cold 24h.',
         colors: [
@@ -153,13 +154,50 @@ const INITIAL_PRODUCTS = {
     }
 };
 
-const SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
+const FALLBACK_SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
 
 const Shop = () => {
     // i18n
     const { t } = useI18n();
     const { collections: dbDesignCollections } = useDesignCollections();
     const { data: dbProducts } = useDbProducts();
+    const { data: storeColors } = useStoreColors();
+    const { data: storeSizes } = useStoreSizes();
+
+    // Dynamic SHARED_COLORS from store catalog (with fallback)
+    const SHARED_COLORS = useMemo(() => {
+        if (storeColors && storeColors.length > 0) {
+            return storeColors.map(c => ({ name: c.name, hex: c.hex }));
+        }
+        return FALLBACK_COLORS;
+    }, [storeColors]);
+
+    // Dynamic sizes from store catalog (with fallback)  
+    const SIZES = useMemo(() => {
+        if (storeSizes && storeSizes.length > 0) {
+            return storeSizes.map(s => s.name);
+        }
+        return FALLBACK_SIZES;
+    }, [storeSizes]);
+
+    // Get product-level allowed colors (intersection of store colors and product DB colors)
+    const getProductColors = useCallback((productSlug: string) => {
+        const dbProduct = dbProducts?.find(p => p.slug === productSlug);
+        if (dbProduct?.colors && dbProduct.colors.length > 0) {
+            // Intersection: only colors that are both in store catalog AND product settings
+            return SHARED_COLORS.filter(sc => dbProduct.colors!.includes(sc.name));
+        }
+        return SHARED_COLORS; // If no product-level restriction, all store colors
+    }, [dbProducts, SHARED_COLORS]);
+
+    // Get product-level allowed sizes (intersection of store sizes and product DB sizes)
+    const getProductSizes = useCallback((productSlug: string) => {
+        const dbProduct = dbProducts?.find(p => p.slug === productSlug);
+        if (dbProduct?.sizes && dbProduct.sizes.length > 0) {
+            return SIZES.filter(s => dbProduct.sizes!.includes(s));
+        }
+        return SIZES;
+    }, [dbProducts, SIZES]);
 
     // Merge DB product data into INITIAL_PRODUCTS (prices, names, descriptions)
     const products = useMemo(() => {
@@ -842,9 +880,8 @@ const Shop = () => {
                                 // Get colors allowed by DESIGN rules (from API config)
                                 const designColors = getDesignColorsFromConfig(currentDesign);
 
-                                // Get colors allowed by PRODUCT rules (from API config)
-                                const allowedProductColorHexes = getAllowedColors(selectedProduct);
-                                const productColors = SHARED_COLORS.filter(c => allowedProductColorHexes.includes(c.hex));
+                                // Get colors allowed by PRODUCT rules (from dashboard product settings)
+                                const productColors = getProductColors(selectedProduct);
 
                                 // Intersect: Only show colors that are BOTH in design rules AND product rules
                                 const availableColors = designColors.filter(dc =>
@@ -1002,7 +1039,9 @@ const Shop = () => {
                             <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto shrink-0 justify-center">
 
                                 {/* Size Picker */}
-                                {selectedProduct !== 'cap' && selectedProduct !== 'bottle' && (
+                                {selectedProduct !== 'cap' && selectedProduct !== 'bottle' && (() => {
+                                    const availableSizes = getProductSizes(selectedProduct);
+                                    return availableSizes.length > 0 ? (
                                     <div className="flex-1 sm:flex-none flex flex-col gap-3 min-w-[200px]">
                                         <div className="flex justify-between items-center px-1">
                                             <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground/70 font-display uppercase tracking-widest">Veličina</label>
@@ -1016,13 +1055,9 @@ const Shop = () => {
                                                     onChange={(e) => setSelectedSize(e.target.value)}
                                                     className="w-full h-11 pl-4 pr-10 bg-background rounded-none border border-border shadow-sm font-display uppercase tracking-widest font-bold text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-black/10"
                                                 >
-                                                    <option value="6-8 g.">6-8 g.</option>
-                                                    <option value="8-10 g.">8-10 g.</option>
-                                                    <option value="10-12 g.">10-12 g.</option>
-                                                    <option value="S">S</option>
-                                                    <option value="M">M</option>
-                                                    <option value="L">L</option>
-                                                    <option value="XL">XL</option>
+                                                    {availableSizes.map(size => (
+                                                        <option key={size} value={size}>{size}</option>
+                                                    ))}
                                                 </select>
                                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                                                     <ChevronDown className="w-5 h-5 text-muted-foreground/70" />
@@ -1030,31 +1065,24 @@ const Shop = () => {
                                             </div>
                                         </div>
 
-                                        {/* Desktop: Circular Buttons */}
+                                        {/* Desktop: Buttons */}
                                         <div className="hidden sm:flex justify-between items-center gap-3 bg-background rounded-none border border-border shadow-sm px-3 py-2">
-                                            {[
-                                                { label: <>6-8<br />g.</>, value: '6-8 g.' },
-                                                { label: <>8-10<br />g.</>, value: '8-10 g.' },
-                                                { label: <>10-12<br />g.</>, value: '10-12 g.' },
-                                                { label: 'S', value: 'S' },
-                                                { label: 'M', value: 'M' },
-                                                { label: 'L', value: 'L' },
-                                                { label: 'XL', value: 'XL' },
-                                            ].map(({ label, value }) => (
+                                            {availableSizes.map(size => (
                                                 <button
-                                                    key={value}
-                                                    onClick={() => setSelectedSize(value)}
-                                                    className={`w-11 h-11 rounded-none font-bold text-xs transition-all duration-300 flex items-center justify-center font-display uppercase tracking-widest leading-tight shrink-0 ${selectedSize === value
+                                                    key={size}
+                                                    onClick={() => setSelectedSize(size)}
+                                                    className={`w-11 h-11 rounded-none font-bold text-xs transition-all duration-300 flex items-center justify-center font-display uppercase tracking-widest leading-tight shrink-0 ${selectedSize === size
                                                         ? 'bg-black text-white shadow-md scale-110'
                                                         : 'text-muted-foreground hover:bg-muted hover:text-black'
                                                         }`}
                                                 >
-                                                    {label}
+                                                    {size.includes(' ') ? <>{size.split(' ')[0]}<br/>{size.split(' ')[1]}</> : size}
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
-                                )}
+                                    ) : null;
+                                })()}
 
                                 {/* Quantity Picker */}
                                 <div className="flex-1 sm:flex-none flex flex-col gap-3 min-w-[140px]">

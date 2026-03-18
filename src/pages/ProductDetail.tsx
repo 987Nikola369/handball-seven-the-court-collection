@@ -9,12 +9,15 @@ import { ProductGrid } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
+import { useStoreSizes, useStoreColors } from "@/hooks/useStoreCatalog";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { t } = useI18n();
   const { addItem } = useCart();
   const { data: dbProducts } = useProducts();
+  const { data: storeSizes } = useStoreSizes();
+  const { data: storeColors } = useStoreColors();
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -23,7 +26,6 @@ const ProductDetail = () => {
       id: p.slug,
       name: p.name,
       price: Number(p.price),
-      collection: p.collection as any,
       badge: p.badge as any,
       sizes: p.sizes || [],
       colors: p.colors || [],
@@ -31,7 +33,24 @@ const ProductDetail = () => {
       image: p.image_url,
     })), [dbProducts]);
 
+  // Compute available sizes for this product (intersection of store sizes and product sizes)
   const product = products.find(p => p.id === id);
+  const availableSizes = useMemo(() => {
+    if (!product || !storeSizes) return product?.sizes || [];
+    const storeNames = storeSizes.map(s => s.name);
+    if (product.sizes.length > 0) {
+      return storeNames.filter(s => product.sizes.includes(s));
+    }
+    return storeNames;
+  }, [product, storeSizes]);
+
+  const availableColors = useMemo(() => {
+    if (!product || !storeColors) return [];
+    if (product.colors.length > 0) {
+      return storeColors.filter(sc => product.colors.includes(sc.name));
+    }
+    return storeColors;
+  }, [product, storeColors]);
 
   if (!product) {
     return (
@@ -42,7 +61,7 @@ const ProductDetail = () => {
     );
   }
 
-  const related = products.filter(p => p.collection === product.collection && p.id !== product.id).slice(0, 4);
+  const related = products.filter(p => p.id !== product.id).slice(0, 4);
 
   const handleAddToCart = () => {
     if (!selectedSize) return;
@@ -51,8 +70,7 @@ const ProductDetail = () => {
       name: product.name,
       price: product.price,
       size: selectedSize,
-      color: product.colors?.[0] || undefined,
-      collection: product.collection || undefined,
+      color: availableColors?.[0]?.name || product.colors?.[0] || undefined,
       quantity,
       image: product.image,
     });
@@ -85,7 +103,7 @@ const ProductDetail = () => {
               <div className="mb-5 sm:mb-6">
                 <p className="font-display uppercase text-xs tracking-widest mb-3">{t("shop.size")}</p>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map(size => (
+                  {availableSizes.map(size => (
                     <button key={size} onClick={() => setSelectedSize(size)}
                       className={`px-4 py-2.5 border text-xs font-display uppercase tracking-wider transition-all min-w-[44px] min-h-[44px] ${
                         selectedSize === size ? "border-primary text-primary" : "border-border text-muted-foreground hover:border-foreground/30"
