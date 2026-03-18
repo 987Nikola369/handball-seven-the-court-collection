@@ -170,6 +170,7 @@ const Hero = () => {
             frontDesigns={frontDesigns}
             backDesigns={backDesigns}
             colorToLogoMap={colorToLogoMap}
+            designVariantMap={designVariantMap}
           />
         </motion.div>
       </div>
