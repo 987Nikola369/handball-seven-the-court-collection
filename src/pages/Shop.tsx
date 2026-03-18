@@ -221,11 +221,15 @@ const Shop = () => {
         return merged;
     }, [dbProducts]);
 
-    // Resolve front logo: DB first, then static fallback
-    const frontLogoUrl = useMemo(() => {
-        const dbLogo = dbDesignCollections.front_logo?.[0]?.url;
-        return dbLogo || STATIC_FRONT_LOGO;
+    // Resolve front logo asset (full DesignAsset for variant resolution)
+    const frontLogoAsset = useMemo(() => {
+        return dbDesignCollections.front_logo?.[0] || null;
     }, [dbDesignCollections]);
+
+    // Default front logo URL (dark variant)
+    const frontLogoUrl = useMemo(() => {
+        return frontLogoAsset?.url || STATIC_FRONT_LOGO;
+    }, [frontLogoAsset]);
 
     // Build effective design collections: DB designs take priority, fallback to static
     const effectiveCollections = useMemo(() => {
