@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { useShopConfig } from "@/hooks/useShopConfig";
 import { useDesignCollections } from "@/hooks/useDesignCollections";
+import { useCollections } from "@/hooks/useCollections";
+import { useCollectionColorMap } from "@/hooks/useStoreCatalog";
 import logo from "@/assets/logo.png";
 import Hero3DCarousel from "@/components/Hero3DCarousel";
 
