@@ -34,6 +34,8 @@ const Hero = () => {
   const { t, getSiteContent } = useI18n();
   const { config: shopConfig } = useShopConfig();
   const { collections: dbDesignCollections } = useDesignCollections();
+  const { data: dbCollections } = useCollections(false);
+  const collectionColorMap = useCollectionColorMap(dbCollections?.map(c => ({ id: c.id, slug: c.slug })));
   const heroContent = getSiteContent("hero") as Record<string, any> | undefined;
   const bgImage = heroContent?.bg_image || "/images/hero-bg.jpg";
 
