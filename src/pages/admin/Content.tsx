@@ -284,6 +284,33 @@ export default function Content() {
     return fb.items;
   };
 
+  const getHandballElements = () => {
+    const he = contentMap["handball_elements"];
+    if (!he?.elements || !Array.isArray(he.elements)) {
+      // Return defaults
+      return [
+        { title: "Fast Break", line1: "Speed changes everything.", line2: "The game can turn in seconds." },
+        { title: "The Shot", line1: "Power. Precision. Instinct.", line2: "Every attack ends with a moment that decides it all." },
+        { title: "The Save", line1: "One reaction. One movement.", line2: "Goalkeepers change the course of the game." },
+        { title: "Defense", line1: "The heart of the game.", line2: "Every attack begins with a wall that refuses to break." },
+        { title: "Contact", line1: "Handball is built on physical battles.", line2: "Strength, balance and courage decide every duel." },
+        { title: "The System", line1: "Seven players. One structure.", line2: "Every role matters." },
+        { title: "The Pass", line1: "The game moves faster than any player.", line2: "The ball decides everything." },
+      ];
+    }
+    return he.elements;
+  };
+
+  const updateHandballElement = (index: number, field: "title" | "line1" | "line2", value: string) => {
+    setContentMap((prev) => {
+      const he = { ...(prev["handball_elements"] || {}) };
+      const elements = [...(he.elements || getHandballElements())];
+      elements[index] = { ...elements[index], [field]: value };
+      he.elements = elements;
+      return { ...prev, handball_elements: he };
+    });
+  };
+
   const updateFeatureItem = (index: number, field: "icon" | "label", value: string) => {
     setContentMap((prev) => {
       const fb = { ...(prev["features_bar"] || {}) };
