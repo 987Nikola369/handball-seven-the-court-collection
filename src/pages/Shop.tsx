@@ -255,14 +255,20 @@ const Shop = () => {
         };
     }, [dbDesignCollections]);
 
-    // Build color-to-logo map dynamically from DB front logo
+    // Build color-to-logo map with dark/light variant resolution
     const COLOR_TO_LOGO_MAP = useMemo(() => {
         const map: Record<string, string> = {};
-        ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'].forEach(color => {
-            map[color] = frontLogoUrl;
+        const allColorHexes = storeColors?.map(c => c.hex) || ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'];
+        const { resolveDesignVariant } = require('@/hooks/useDesignCollections');
+        allColorHexes.forEach(color => {
+            if (frontLogoAsset) {
+                map[color] = resolveDesignVariant(frontLogoAsset, color);
+            } else {
+                map[color] = frontLogoUrl;
+            }
         });
         return map;
-    }, [frontLogoUrl]);
+    }, [frontLogoAsset, frontLogoUrl, storeColors]);
 
     // Build variant map for light/dark design resolution
     const designVariantMap = useMemo(() => buildDesignVariantMap(dbDesignCollections), [dbDesignCollections]);
