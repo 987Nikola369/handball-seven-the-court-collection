@@ -1037,7 +1037,13 @@ const Shop = () => {
                                                     }`}
                                             >
                                                 <img
-                                                    src={design}
+                                                    src={(() => {
+                                                        const asset = designVariantMap[design];
+                                                        if (asset?.lightColors?.length && asset.lightUrl && asset.lightColors.some(c => c.toLowerCase() === selectedColor.toLowerCase())) {
+                                                            return asset.lightUrl;
+                                                        }
+                                                        return design;
+                                                    })()}
                                                     alt="Design"
                                                     className="w-full h-full object-contain p-2"
                                                 />
