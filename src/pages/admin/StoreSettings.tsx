@@ -158,13 +158,19 @@ function CollectionConfig({ collection }: { collection: DbCollection }) {
   const toggleSize = (sizeId: string) => {
     const current = activeSizeIds || [];
     const next = current.includes(sizeId) ? current.filter(id => id !== sizeId) : [...current, sizeId];
-    setSizes.mutate({ collectionId: collection.id, sizeIds: next });
+    setSizes.mutate({ collectionId: collection.id, sizeIds: next }, {
+      onSuccess: () => toast.success('Collection sizes updated'),
+      onError: (e: any) => toast.error(e.message),
+    });
   };
 
   const toggleColor = (colorId: string) => {
     const current = activeColorIds || [];
     const next = current.includes(colorId) ? current.filter(id => id !== colorId) : [...current, colorId];
-    setColors.mutate({ collectionId: collection.id, colorIds: next });
+    setColors.mutate({ collectionId: collection.id, colorIds: next }, {
+      onSuccess: () => toast.success('Collection colors updated'),
+      onError: (e: any) => toast.error(e.message),
+    });
   };
 
   return (
