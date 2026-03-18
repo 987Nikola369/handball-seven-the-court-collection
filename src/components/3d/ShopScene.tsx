@@ -1792,6 +1792,8 @@ interface ShopSceneProps {
         cap?: string[];
         bottle?: string[];
     };
+    /** Map from design URL → DesignAsset for light/dark variant resolution */
+    designVariantMap?: Record<string, { url: string; lightUrl?: string; darkColors?: string[]; lightColors?: string[] }>;
 }
 
 export const ShopScene = ({
