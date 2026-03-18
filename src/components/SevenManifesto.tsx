@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useI18n } from "@/lib/i18n";
 
-const manifesto = [
+const defaultManifesto = [
   { text: "Seven is not just a number.", style: "hero" },
   { text: "Seven is the game.", style: "hero" },
   { text: "7 days in a week.", style: "stat" },
