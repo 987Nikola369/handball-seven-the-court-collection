@@ -1,8 +1,11 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Save, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Save, Check, Upload, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { useStoreSettings, useUpdateStoreSetting } from "@/hooks/useStoreSettings";
+import { useSiteContent, useUpdateSiteContent } from "@/hooks/useSiteContent";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import staticLogo from "@/assets/logo.png";
 
 export default function Settings() {
   const { data: settings, isLoading } = useStoreSettings();
