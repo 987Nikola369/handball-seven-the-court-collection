@@ -1857,12 +1857,12 @@ export const ShopScene = ({
 
     const tshirtCleanBack = useMemo(() => {
         const restricted = productRestrictedDesigns?.tshirt || [];
-        // T-shirt uses vintage or back list for back by default logic
-        return (vintageList || hoodieBackList || []).filter(d => {
+        // T-shirt cycles through ALL designs on the back
+        return (allDesignsList || vintageList || hoodieBackList || []).filter(d => {
             const fname = urlToFilename?.[d] || d.split('/').pop()?.split('?')[0] || '';
             return !restricted.includes(fname);
         });
-    }, [vintageList, hoodieBackList, urlToFilename, productRestrictedDesigns]);
+    }, [allDesignsList, vintageList, hoodieBackList, urlToFilename, productRestrictedDesigns]);
 
     // Memoize the clean list for Hoodie
     const hoodieCleanFront = useMemo(() => {
