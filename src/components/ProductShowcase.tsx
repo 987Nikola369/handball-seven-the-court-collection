@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShopScene } from '@/components/3d/ShopScene';
 import { useShopConfig } from '@/hooks/useShopConfig';
-import { useDesignCollections, buildDesignVariantMap } from '@/hooks/useDesignCollections';
+import { useDesignCollections, buildDesignVariantMap, resolveDesignVariant } from '@/hooks/useDesignCollections';
 import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
