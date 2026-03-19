@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useI18n, Lang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/hooks/useAuth";
-import logo from "@/assets/logo.png";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t, lang, setLang } = useI18n();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { user, isAdmin, signOut } = useAuth();
+  const logo = useSiteLogo();
   const location = useLocation();
 
   const links = [
