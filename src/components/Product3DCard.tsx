@@ -116,7 +116,7 @@ export const Product3DGrid = ({ items, columns = 4 }: { items: Product3DCardProp
 export const Product3DThumbnail = ({ modelUrl }: { modelUrl: string }) => {
   return (
     <div className="w-12 h-12 overflow-hidden bg-white/10">
-      <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1]}>
+      <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1]} gl={{ alpha: true }} style={{ background: 'transparent' }}>
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
           <Environment preset="city" />
