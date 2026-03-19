@@ -95,49 +95,30 @@ const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }:
   }, [dbDesignCollections]);
 
   const frontLogoAsset = dbDesignCollections.front_logo?.[0] || null;
+
+  // Build colorToLogoMap covering ALL product colors (union) for logo variant resolution
+  const allProductColors = useMemo(() => {
+    const set = new Set<string>();
+    [shopConfig?.tshirt, shopConfig?.hoodie, shopConfig?.cap, shopConfig?.bottle].forEach(pc => {
+      (pc as any)?.allowed_colors?.forEach((c: string) => set.add(c));
+    });
+    return [...set];
+  }, [shopConfig]);
+
   const COLOR_TO_LOGO_MAP = useMemo(() => {
     const map: Record<string, string> = {};
-    // Use all store colors so every cycling color gets a logo
-    const allColors = [...new Set(
-      Object.values(collectionColorMap).flat().map(c => c.hex)
-    )];
-    const colors = allColors.length > 0 ? allColors : ['#231f20', '#d1d5db', '#00ab98', '#00aeef', '#387bbf', '#8358a4', '#ffffff', '#e78fab', '#a1d7c0'];
-    colors.forEach((color: string) => {
+    allProductColors.forEach((color: string) => {
       map[color] = frontLogoAsset ? resolveDesignVariant(frontLogoAsset, color) : frontLogoUrl;
     });
     return map;
-  }, [frontLogoUrl, frontLogoAsset, collectionColorMap]);
+  }, [frontLogoUrl, frontLogoAsset, allProductColors]);
 
-  const logoList = useMemo(() => frontLogoUrl ? [frontLogoUrl] : effectiveCollections['STREET'], [frontLogoUrl, effectiveCollections]);
-  const hoodieBackList = useMemo(() => [...effectiveCollections['CLASSIC']], [effectiveCollections]);
-  const vintageList = useMemo(() => [...effectiveCollections['VINTAGE']], [effectiveCollections]);
-  const allDesignsList = useMemo(() => [
-    ...effectiveCollections['STREET'],
-    ...effectiveCollections['CLASSIC'],
-    ...effectiveCollections['VINTAGE']
-  ], [effectiveCollections]);
-
-  const designReplacements = useMemo(() => ({}), []);
-
-  const designVariantMap = useMemo(() => buildDesignVariantMap(dbDesignCollections), [dbDesignCollections]);
-
-  const productAllowedColors = useMemo(() => {
-    const getColColors = (slug: string) => {
-      const cols = collectionColorMap[slug];
-      return cols && cols.length > 0 ? cols.map(c => c.hex) : undefined;
-    };
-    // For showcase: use ALL colors across all collections so every color cycles
-    const allColors = [...new Set(
-      Object.values(collectionColorMap).flat().map(c => c.hex)
-    )];
-    const allOrFallback = allColors.length > 0 ? allColors : undefined;
-    return {
-      tshirt: allOrFallback || getColColors('VINTAGE') || getColColors('CLASSIC'),
-      hoodie: allOrFallback || getColColors('CLASSIC'),
-      cap: allOrFallback || getColColors('STREET') || shopConfig?.cap?.allowed_colors,
-      bottle: allOrFallback || shopConfig?.bottle?.allowed_colors
-    };
-  }, [collectionColorMap, shopConfig]);
+  const productAllowedColors = useMemo(() => ({
+    tshirt: shopConfig?.tshirt?.allowed_colors,
+    hoodie: shopConfig?.hoodie?.allowed_colors,
+    cap: shopConfig?.cap?.allowed_colors,
+    bottle: shopConfig?.bottle?.allowed_colors
+  }), [shopConfig]);
 
   const productRestrictedDesigns = useMemo(() => ({
     tshirt: shopConfig?.tshirt?.restricted_designs,
