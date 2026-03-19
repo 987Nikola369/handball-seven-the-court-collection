@@ -81,7 +81,7 @@ export function useShopConfig(): UseShopConfigReturn {
                 .eq('key', 'shop_config')
                 .maybeSingle();
             if (error) throw error;
-            return data?.value as ShopConfig | null;
+            return data?.value as unknown as ShopConfig | null;
         },
         staleTime: 60_000,
     });
