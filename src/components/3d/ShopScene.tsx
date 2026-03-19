@@ -1223,14 +1223,37 @@ const ProductModel = ({
                 if (cycleDesignsBack && cycleDesignsBack.length > 0) {
                     // Filter back designs to those compatible with the new color
                     let compatibleBackDesigns: number[] = [];
+                    const newColorLower = newColor.toLowerCase();
                     for (let i = 0; i < cycleDesignsBack.length; i++) {
                         const url = cycleDesignsBack[i];
                         const filename = urlToFilename?.[url] || url.split('/').pop()?.split('?')[0] || '';
+
+                        // Check designColorMap (legacy config-based mapping)
                         const mapped = designColorMap?.[filename];
-                        // Compatible if no color map exists for this design, or color is in the map
-                        if (!mapped || mapped.length === 0 || mapped.some(mc => mc.toLowerCase() === newColor.toLowerCase())) {
-                            compatibleBackDesigns.push(i);
+                        if (mapped && mapped.length > 0) {
+                            if (mapped.some(mc => mc.toLowerCase() === newColorLower)) {
+                                compatibleBackDesigns.push(i);
+                            }
+                            continue;
                         }
+
+                        // Check designVariantMap (DB-based dark/light color mapping)
+                        const asset = designVariantMap?.[url];
+                        if (asset) {
+                            const allDesignColors = [
+                                ...(asset.darkColors || []),
+                                ...(asset.lightColors || [])
+                            ];
+                            if (allDesignColors.length > 0) {
+                                if (allDesignColors.some(c => c.toLowerCase() === newColorLower)) {
+                                    compatibleBackDesigns.push(i);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // No color constraints = compatible with everything
+                        compatibleBackDesigns.push(i);
                     }
                     // Fallback: if no compatible designs, allow all
                     if (compatibleBackDesigns.length === 0) {
