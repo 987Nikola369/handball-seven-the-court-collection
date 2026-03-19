@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { useShopConfig } from "@/hooks/useShopConfig";
-import { useDesignCollections, buildDesignVariantMap } from "@/hooks/useDesignCollections";
+import { useDesignCollections, buildDesignVariantMap, resolveDesignVariant } from "@/hooks/useDesignCollections";
 import { useCollections } from "@/hooks/useCollections";
 import { useCollectionColorMap } from "@/hooks/useStoreCatalog";
 import logo from "@/assets/logo.png";
@@ -69,12 +69,16 @@ const Hero = () => {
     };
   }, [collectionColorMap, shopConfig]);
 
-  // Build color->logo map (same as ProductShowcase)
+  // Build color->logo map with per-color variant resolution
+  const frontLogoAsset = dbDesignCollections.front_logo?.[0] || null;
   const colorToLogoMap = useMemo(() => {
     const map: Record<string, string> = {};
-    (shopConfig?.hoodie?.allowed_colors || []).forEach((c: string) => { map[c] = frontLogoUrl; });
+    const colors = shopConfig?.hoodie?.allowed_colors || [];
+    colors.forEach((c: string) => {
+      map[c] = frontLogoAsset ? resolveDesignVariant(frontLogoAsset, c) : frontLogoUrl;
+    });
     return map;
-  }, [shopConfig, frontLogoUrl]);
+  }, [shopConfig, frontLogoUrl, frontLogoAsset]);
 
   // Build per-product design lists (with restriction filtering like ShopScene)
   const allDesigns = useMemo(() => [

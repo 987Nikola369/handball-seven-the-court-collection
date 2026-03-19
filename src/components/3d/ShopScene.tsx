@@ -294,6 +294,13 @@ const ProductModel = ({
     const designIndexRef = useRef(currentDesignIndex);
     useEffect(() => { designIndexRef.current = currentDesignIndex; }, [currentDesignIndex]);
 
+    // Separate back design index for independent cycling
+    const [currentBackDesignIndex, setCurrentBackDesignIndex] = useState(() =>
+        enableDesignCycle ? Math.floor(Math.random() * (cycleDesignsBack?.length || 0)) : 0
+    );
+    const backDesignIndexRef = useRef(currentBackDesignIndex);
+    useEffect(() => { backDesignIndexRef.current = currentBackDesignIndex; }, [currentBackDesignIndex]);
+
 
     // Single source of truth for cycling state
     // Cycle continues in customizing mode until user interacts
@@ -842,9 +849,9 @@ const ProductModel = ({
 
     const frontCycleUrl = getEffectiveUrl(baseFrontCycleUrl);
 
-    // Back Cycle
+    // Back Cycle - uses independent back index
     const backCycleList = cycleDesignsBack || null;
-    const baseBackCycleUrl = isCycling && backCycleList ? backCycleList[currentDesignIndex % backCycleList.length] : null;
+    const baseBackCycleUrl = isCycling && backCycleList ? backCycleList[currentBackDesignIndex % backCycleList.length] : null;
     const backCycleUrl = getEffectiveUrl(baseBackCycleUrl);
 
     // Resolve Front URL: Custom Front OR Cycle
@@ -853,7 +860,7 @@ const ProductModel = ({
     const [colorMatchedFrontDesign, setColorMatchedFrontDesign] = useState<string | null>(null);
 
     // Helper to check if product is hoodie or t-shirt (using includes for label matching)
-    const isHoodieOrTshirt = label && (label.includes('duksica') || label.includes('majica'));
+    const isHoodieOrTshirt = productId === 'hoodie' || productId === 'tshirt' || (label && (label.toLowerCase().includes('hoodie') || label.toLowerCase().includes('tee') || label.includes('duksica') || label.includes('majica')));
 
     // Initialize color-matched design on mount (for showcase mode initial load)
     useEffect(() => {
@@ -1172,22 +1179,27 @@ const ProductModel = ({
         if (!isCycling) return;
 
         const runCycle = () => {
-            // Determine random next index
+            // Determine random next index for front
             const len = cycleDesignsFront?.length || 1;
             let nextIndex = Math.floor(Math.random() * len);
 
             // Ensure we don't pick the same index if possible
-            const currentIndex = designIndexRef.current; // Use ref to get current value
+            const currentIndex = designIndexRef.current;
             if (len > 1 && nextIndex === currentIndex % len) {
                 nextIndex = (nextIndex + 1) % len;
             }
 
-            // Change design index
-            setCurrentDesignIndex(nextIndex);
+            // Determine random next index for back (independent)
+            const backLen = cycleDesignsBack?.length || 1;
+            let nextBackIndex = Math.floor(Math.random() * backLen);
+            const currentBackIdx = backDesignIndexRef.current;
+            if (backLen > 1 && nextBackIndex === currentBackIdx % backLen) {
+                nextBackIndex = (nextBackIndex + 1) % backLen;
+            }
 
-            // For ALL models: Trigger transitions
-            // Always trigger Design Glitch
-            // Only trigger Color Swipe if enableColorCycle is true
+            // Change design indices
+            setCurrentDesignIndex(nextIndex);
+            setCurrentBackDesignIndex(nextBackIndex);
 
             if (enableColorCycle) {
                 // Universal Color Validation Logic
@@ -1212,7 +1224,7 @@ const ProductModel = ({
 
                 // 2. Check Back Design Constraint
                 if (cycleDesignsBack) {
-                    const url = cycleDesignsBack[nextIndex % cycleDesignsBack.length];
+                    const url = cycleDesignsBack[nextBackIndex % cycleDesignsBack.length];
                     if (url) {
                         const filename = urlToFilename?.[url] || url.split('/').pop()?.split('?')[0] || '';
                         const mapped = designColorMap?.[filename];
