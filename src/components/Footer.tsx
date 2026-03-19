@@ -45,6 +45,7 @@ const Footer = () => {
             );
           });
         })()}
+        </div>
       </div>
 
       <div className="px-5 md:px-12 lg:px-20 py-12 md:py-16">
