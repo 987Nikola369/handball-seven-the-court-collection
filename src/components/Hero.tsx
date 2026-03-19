@@ -100,6 +100,40 @@ const Hero = () => {
 
   const designVariantMap = useMemo(() => buildDesignVariantMap(dbDesignCollections), [dbDesignCollections]);
 
+  // Build designColorMap with collection color constraints
+  const designColorMap = useMemo(() => {
+    const normalizeHex = (hex: string) => hex.toLowerCase();
+    const merged: Record<string, string[]> = {};
+
+    Object.entries(shopConfig?.design_color_map || {}).forEach(([filename, colors]) => {
+      merged[filename] = Array.isArray(colors) ? colors.map(normalizeHex) : [];
+    });
+
+    const applyCollectionConstraint = (collectionKey: string) => {
+      const allowedByCollection = (collectionColorMap[collectionKey] || []).map(c => normalizeHex(c.hex));
+      if (allowedByCollection.length === 0) return;
+
+      const collKey = collectionKey.toLowerCase() as keyof typeof effectiveCollections;
+      (effectiveCollections[collKey] || []).forEach((url: string) => {
+        const filename = URL_TO_FILENAME[url] || url.split('/').pop()?.split('?')[0] || '';
+        if (!filename) return;
+
+        if (Object.prototype.hasOwnProperty.call(merged, filename)) {
+          const existing = merged[filename] || [];
+          merged[filename] = existing.length === 0 ? [] : existing.filter(c => allowedByCollection.includes(normalizeHex(c)));
+        } else {
+          merged[filename] = [...allowedByCollection];
+        }
+      });
+    };
+
+    applyCollectionConstraint('CLASSIC');
+    applyCollectionConstraint('VINTAGE');
+    applyCollectionConstraint('STREET');
+
+    return merged;
+  }, [shopConfig, collectionColorMap, effectiveCollections]);
+
   const logoList = useMemo(() => frontLogoUrl ? [frontLogoUrl] : [], [frontLogoUrl]);
 
   // Filter restricted designs per product (matching ShopScene capCleanList / bottleCleanList logic)
