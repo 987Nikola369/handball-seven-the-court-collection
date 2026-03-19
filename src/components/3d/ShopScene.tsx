@@ -849,9 +849,9 @@ const ProductModel = ({
 
     const frontCycleUrl = getEffectiveUrl(baseFrontCycleUrl);
 
-    // Back Cycle
+    // Back Cycle - uses independent back index
     const backCycleList = cycleDesignsBack || null;
-    const baseBackCycleUrl = isCycling && backCycleList ? backCycleList[currentDesignIndex % backCycleList.length] : null;
+    const baseBackCycleUrl = isCycling && backCycleList ? backCycleList[currentBackDesignIndex % backCycleList.length] : null;
     const backCycleUrl = getEffectiveUrl(baseBackCycleUrl);
 
     // Resolve Front URL: Custom Front OR Cycle
