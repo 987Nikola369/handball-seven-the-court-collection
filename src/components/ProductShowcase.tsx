@@ -127,6 +127,18 @@ const ProductShowcase = ({ height = 'h-[70vh] md:h-[80vh]', showButton = true }:
     bottle: shopConfig?.bottle?.restricted_designs
   }), [shopConfig]);
 
+  const logoList = useMemo(() => frontLogoUrl ? [frontLogoUrl] : effectiveCollections['STREET'], [frontLogoUrl, effectiveCollections]);
+  const hoodieBackList = useMemo(() => [...effectiveCollections['CLASSIC']], [effectiveCollections]);
+  const vintageList = useMemo(() => [...effectiveCollections['VINTAGE']], [effectiveCollections]);
+  const allDesignsList = useMemo(() => [
+    ...effectiveCollections['STREET'],
+    ...effectiveCollections['CLASSIC'],
+    ...effectiveCollections['VINTAGE']
+  ], [effectiveCollections]);
+
+  const designReplacements = useMemo(() => ({}), []);
+  const designVariantMap = useMemo(() => buildDesignVariantMap(dbDesignCollections), [dbDesignCollections]);
+
   // No-op: products are not clickable in showcase mode
   const handleSelectProduct = () => {};
 
