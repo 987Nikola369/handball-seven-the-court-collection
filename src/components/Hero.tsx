@@ -21,8 +21,16 @@ const fallbackLogoDesigns = import.meta.glob('/src/assets/design-collections/log
 
 const STATIC_FRONT_LOGO = (Object.values(fallbackLogoDesigns)[0] as string) || '';
 
-const processDesigns = (globResult: Record<string, unknown>) =>
-  Object.values(globResult).map(v => v as string);
+const URL_TO_FILENAME: Record<string, string> = {};
+
+const processDesigns = (globResult: Record<string, unknown>) => {
+  return Object.keys(globResult).map(path => {
+    const url = globResult[path] as string;
+    const filename = path.split('/').pop() || '';
+    if (filename) URL_TO_FILENAME[url] = filename;
+    return url;
+  });
+};
 
 const STATIC_COLLECTIONS = {
   classic: processDesigns(classicDesigns),
