@@ -66,7 +66,7 @@ const Collections = () => {
 
         {/* 3D Product Showcase */}
         <ScrollReveal>
-          <ProductShowcase height="h-[50vh] sm:h-[65vh] md:h-[80vh]" />
+          <ProductShowcase height="h-[75vh] sm:h-[85vh] md:h-[85vh]" />
         </ScrollReveal>
       </main>
       <Footer />
