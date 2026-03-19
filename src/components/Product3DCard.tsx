@@ -71,7 +71,7 @@ export const Product3DCard = ({ name, price, modelUrl, slug, badge, index = 0 }:
   return (
     <Link to={`/shop?product=${slug}`} className="group block">
       <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/50 to-muted border border-border hover:border-primary/30 transition-all duration-300">
-        <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1.5]}>
+        <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1.5]} gl={{ alpha: true }} style={{ background: 'transparent' }}>
           <Suspense fallback={null}>
             <ambientLight intensity={0.8} />
             <spotLight position={[5, 5, 5]} angle={0.3} penumbra={1} intensity={0.6} />
