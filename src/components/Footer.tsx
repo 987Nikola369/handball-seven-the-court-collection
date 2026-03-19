@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 
 const Footer = () => {
   const { t, getSiteContent } = useI18n();
+  const logo = useSiteLogo();
 
   const socials = getSiteContent("socials") as Record<string, string> | undefined;
   const featuresBar = getSiteContent("features_bar") as { items?: { icon: string; label: Record<string, string> }[] } | undefined;

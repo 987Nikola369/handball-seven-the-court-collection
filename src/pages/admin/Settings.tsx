@@ -45,6 +45,65 @@ export default function Settings() {
     }
   };
 
+  function LogoManagement() {
+    const { data: logoContent } = useSiteContent('logo');
+    const updateContent = useUpdateSiteContent();
+    const fileRef = useRef<HTMLInputElement>(null);
+    const [uploading, setUploading] = useState(false);
+
+    const currentUrl = (logoContent as any)?.value?.url || '';
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploading(true);
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `logo/site-logo-${Date.now()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from('cms-images').upload(path, file, { upsert: true });
+        if (uploadErr) throw uploadErr;
+        const { data: pubData } = supabase.storage.from('cms-images').getPublicUrl(path);
+        await updateContent.mutateAsync({ key: 'logo', value: { url: pubData.publicUrl } });
+        toast.success('Logo updated!');
+      } catch (err: any) {
+        toast.error(err.message);
+      } finally {
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = '';
+      }
+    };
+
+    const handleRemove = async () => {
+      await updateContent.mutateAsync({ key: 'logo', value: { url: '' } });
+      toast.success('Logo reset to default');
+    };
+
+    return (
+      <div className="md:col-span-2 bg-black border border-white/10 p-6">
+        <h3 className="text-xl font-display uppercase tracking-widest font-bold text-white mb-6 border-b border-white/10 pb-4">Site Logo</h3>
+        <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="bg-white/5 border border-white/10 p-4 flex items-center justify-center min-w-[160px] min-h-[80px]">
+            <img src={currentUrl || staticLogo} alt="Current logo" className="max-h-16 max-w-[200px] object-contain" />
+          </div>
+          <div className="flex flex-col gap-3">
+            <p className="text-white/50 text-xs font-body">Upload a PNG or SVG logo. It will replace the logo across the entire site (navbar, footer, etc.).</p>
+            <div className="flex items-center gap-3">
+              <label className="bg-primary text-black flex items-center gap-2 font-display uppercase tracking-widest font-bold px-4 py-2.5 hover:bg-primary/90 transition-colors cursor-pointer text-xs min-h-[44px]">
+                <Upload className="w-4 h-4" /> {uploading ? 'Uploading...' : 'Upload Logo'}
+                <input ref={fileRef} type="file" accept="image/png,image/svg+xml,image/webp" className="hidden" onChange={handleUpload} disabled={uploading} />
+              </label>
+              {currentUrl && (
+                <button onClick={handleRemove} className="text-white/40 hover:text-destructive transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AdminLayout>
       <div className="space-y-6">

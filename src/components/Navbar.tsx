@@ -12,6 +12,7 @@ const Navbar = () => {
   const { t, lang, setLang } = useI18n();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { user, isAdmin, signOut } = useAuth();
+  const logo = useSiteLogo();
   const location = useLocation();
 
   const links = [
