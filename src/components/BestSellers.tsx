@@ -14,7 +14,7 @@ const BestSellers = () => {
           </h2>
         </ScrollReveal>
       </div>
-      <ProductShowcase height="h-[50vh] sm:h-[60vh] md:h-[75vh]" />
+      <ProductShowcase height="h-[75vh] sm:h-[85vh] md:h-[85vh]" />
     </section>);
 
 };
