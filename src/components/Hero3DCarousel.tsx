@@ -297,6 +297,8 @@ export interface HeroCarouselConfig {
   backDesigns?: Record<string, string[]>;  // per product id
   colorToLogoMap?: Record<string, string>;
   designVariantMap?: Record<string, { url: string; lightUrl?: string; darkColors?: string[]; lightColors?: string[] }>;
+  designColorMap?: Record<string, string[]>; // filename -> allowed color hexes
+  urlToFilename?: Record<string, string>;
 }
 
 interface CycleState {
@@ -306,7 +308,7 @@ interface CycleState {
   backDesign: string;
 }
 
-const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, designVariantMap }: HeroCarouselConfig) => {
+const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, designVariantMap, designColorMap, urlToFilename }: HeroCarouselConfig) => {
   const resolveVariant = useCallback((url: string, color: string): string => {
     if (!url || !designVariantMap) return url;
     const asset = designVariantMap[url];
@@ -337,16 +339,46 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
       frontDesign = colorToLogoMap[color] || frontDesign;
     }
 
-    // Pick back design
+    // Pick back design — filter by color compatibility
     const bList = backDesigns?.[pid] || [];
-    let backDesign = bList.length > 0 ? bList[Math.floor(Math.random() * bList.length)] : '';
+    const colorLower = color.toLowerCase();
+    const compatibleBackDesigns = bList.filter(url => {
+      const filename = urlToFilename?.[url] || url.split('/').pop()?.split('?')[0] || '';
+      
+      // Check designColorMap (collection-constrained mapping)
+      if (designColorMap && filename) {
+        const mapped = designColorMap[filename];
+        if (mapped) {
+          return mapped.length > 0 && mapped.some(c => c.toLowerCase() === colorLower);
+        }
+      }
+
+      // Check designVariantMap (dark/light color arrays from DB)
+      const asset = designVariantMap?.[url];
+      if (asset) {
+        const allDesignColors = [
+          ...(asset.darkColors || []),
+          ...(asset.lightColors || [])
+        ];
+        if (allDesignColors.length > 0) {
+          return allDesignColors.some(c => c.toLowerCase() === colorLower);
+        }
+      }
+
+      // No restrictions — allow
+      return true;
+    });
+
+    let backDesign = compatibleBackDesigns.length > 0
+      ? compatibleBackDesigns[Math.floor(Math.random() * compatibleBackDesigns.length)]
+      : '';
 
     // Resolve light/dark variants based on the picked color
     frontDesign = resolveVariant(frontDesign, color);
     backDesign = resolveVariant(backDesign, color);
 
     return { productIndex: productIdx, color, frontDesign, backDesign };
-  }, [productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, resolveVariant]);
+  }, [productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, resolveVariant, designColorMap, urlToFilename, designVariantMap]);
 
   const [current, setCurrent] = useState<CycleState>(() => pickForProduct(0));
   const [transition, setTransition] = useState(0); // 0 = idle, 0..1 = glitching out, 1..2 = glitching in
@@ -424,7 +456,7 @@ const HeroCarouselScene = ({ productAllowedColors, frontDesigns, backDesigns, co
   );
 };
 
-const Hero3DCarousel = ({ productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, designVariantMap }: HeroCarouselConfig) => {
+const Hero3DCarousel = ({ productAllowedColors, frontDesigns, backDesigns, colorToLogoMap, designVariantMap, designColorMap, urlToFilename }: HeroCarouselConfig) => {
   return (
     <div className="w-full h-full">
       <Canvas
@@ -440,6 +472,8 @@ const Hero3DCarousel = ({ productAllowedColors, frontDesigns, backDesigns, color
             backDesigns={backDesigns}
             colorToLogoMap={colorToLogoMap}
             designVariantMap={designVariantMap}
+            designColorMap={designColorMap}
+            urlToFilename={urlToFilename}
           />
         </Suspense>
       </Canvas>
