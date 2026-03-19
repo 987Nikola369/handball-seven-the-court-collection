@@ -1875,11 +1875,12 @@ export const ShopScene = ({
 
     const hoodieCleanBack = useMemo(() => {
         const restricted = productRestrictedDesigns?.hoodie || [];
-        return (hoodieBackList || []).filter(d => {
+        // Hoodie cycles through ALL designs on the back
+        return (allDesignsList || hoodieBackList || []).filter(d => {
             const fname = urlToFilename?.[d] || d.split('/').pop()?.split('?')[0] || '';
             return !restricted.includes(fname);
         });
-    }, [hoodieBackList, urlToFilename, productRestrictedDesigns]);
+    }, [allDesignsList, hoodieBackList, urlToFilename, productRestrictedDesigns]);
 
     // Compatibility shim
     const effectiveDesigns = designs || { front: selectedDesign || "", back: "" };
