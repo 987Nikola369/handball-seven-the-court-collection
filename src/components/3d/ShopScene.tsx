@@ -1179,22 +1179,27 @@ const ProductModel = ({
         if (!isCycling) return;
 
         const runCycle = () => {
-            // Determine random next index
+            // Determine random next index for front
             const len = cycleDesignsFront?.length || 1;
             let nextIndex = Math.floor(Math.random() * len);
 
             // Ensure we don't pick the same index if possible
-            const currentIndex = designIndexRef.current; // Use ref to get current value
+            const currentIndex = designIndexRef.current;
             if (len > 1 && nextIndex === currentIndex % len) {
                 nextIndex = (nextIndex + 1) % len;
             }
 
-            // Change design index
-            setCurrentDesignIndex(nextIndex);
+            // Determine random next index for back (independent)
+            const backLen = cycleDesignsBack?.length || 1;
+            let nextBackIndex = Math.floor(Math.random() * backLen);
+            const currentBackIdx = backDesignIndexRef.current;
+            if (backLen > 1 && nextBackIndex === currentBackIdx % backLen) {
+                nextBackIndex = (nextBackIndex + 1) % backLen;
+            }
 
-            // For ALL models: Trigger transitions
-            // Always trigger Design Glitch
-            // Only trigger Color Swipe if enableColorCycle is true
+            // Change design indices
+            setCurrentDesignIndex(nextIndex);
+            setCurrentBackDesignIndex(nextBackIndex);
 
             if (enableColorCycle) {
                 // Universal Color Validation Logic
