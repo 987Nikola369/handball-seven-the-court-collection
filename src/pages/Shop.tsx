@@ -666,7 +666,7 @@ const Shop = () => {
             ? (designs.back || designs.front)
             : designs.front;
 
-        addItem({
+        const added = addItem({
             id: product.id + '-' + btoa(JSON.stringify({ c: selectedColor, d: designs, z: selectedSize, st: selectedProduct === 'tshirt' ? selectedStyle : undefined })),
             name: product.name + (selectedProduct === 'tshirt' ? ` (${selectedStyle})` : ''),
             price: Number(displayPrice),
@@ -677,6 +677,10 @@ const Shop = () => {
             quantity: quantity,
             image: mainImage
         });
+
+        if (!added) return;
+
+
 
         toast({
             title: "Dodano u koĹˇaricu",

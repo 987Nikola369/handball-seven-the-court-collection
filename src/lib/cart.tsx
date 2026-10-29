@@ -23,7 +23,7 @@ export type CartItem = {
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (item: CartItem) => void;
+  addItem: (item: CartItem) => boolean;
   removeItem: (id: string, size: string) => void;
   updateQuantity: (id: string, size: string, qty: number) => void;
   clearCart: () => void;
@@ -48,11 +48,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setClosedNoticeOpen(true);
   };
 
-  const addItem = (item: CartItem) => {
+  const addItem = (item: CartItem): boolean => {
     if (SHOP_CLOSED) {
       showShopClosed();
-      return;
+      return false;
     }
+
     setItems(prev => {
       const existing = prev.find(i => i.id === item.id && i.size === item.size);
       if (existing) {
@@ -61,7 +62,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return [...prev, item];
     });
     setIsOpen(true);
+    return true;
   };
+
 
   const removeItem = (id: string, size: string) => setItems(prev => prev.filter(i => !(i.id === id && i.size === size)));
   const updateQuantity = (id: string, size: string, qty: number) => {
