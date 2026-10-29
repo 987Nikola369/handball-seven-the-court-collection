@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import ProductGallery, { type ProductGalleryImage } from '@/components/ProductGallery';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { ShopScene } from '../components/3d/ShopScene';
@@ -19,7 +18,6 @@ import { useCollections } from '@/hooks/useCollections';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-import ShippingWorldwide from '@/components/ShippingWorldwide';
 
 // Fallback local designs
 // @ts-ignore
@@ -161,18 +159,6 @@ const INITIAL_PRODUCTS = {
 };
 
 const FALLBACK_SIZES = ['6-8 g.', '8-10 g.', '10-12 g.', 'S', 'M', 'L', 'XL'];
-
-// Product gallery images – add arrays per product slug as images become available
-const PRODUCT_GALLERY_IMAGES: Record<string, ProductGalleryImage[]> = {
-  hoodie: Array.from({ length: 26 }, (_, i) => ({
-    src: `/gallery/hoodie/hoodie-${i + 1}.webp`,
-    alt: `Hoodie photo ${i + 1}`,
-  })),
-  tshirt: Array.from({ length: 28 }, (_, i) => ({
-    src: `/gallery/tshirt/tshirt-${i + 1}.webp`,
-    alt: `T-shirt photo ${i + 1}`,
-  })),
-};
 
 const Shop = () => {
     // i18n
@@ -680,7 +666,7 @@ const Shop = () => {
             ? (designs.back || designs.front)
             : designs.front;
 
-        addItem({
+        const added = addItem({
             id: product.id + '-' + btoa(JSON.stringify({ c: selectedColor, d: designs, z: selectedSize, st: selectedProduct === 'tshirt' ? selectedStyle : undefined })),
             name: product.name + (selectedProduct === 'tshirt' ? ` (${selectedStyle})` : ''),
             price: Number(displayPrice),
@@ -691,6 +677,10 @@ const Shop = () => {
             quantity: quantity,
             image: mainImage
         });
+
+        if (!added) return;
+
+
 
         toast({
             title: "Dodano u koĹˇaricu",
@@ -1177,16 +1167,8 @@ const Shop = () => {
                     </div>
                 </div>
             ) : (
-                <div className="container mx-auto px-4 py-12 md:py-20 bg-background relative z-[101] rounded-none border-t-0 shadow-none">
+                <div className="container mx-auto px-4 py-12 md:py-20 bg-transparent relative z-40 rounded-none border-t-0 shadow-none">
                     <div className="max-w-4xl mx-auto space-y-8">
-
-                        {/* Product Photo Gallery */}
-                        {PRODUCT_GALLERY_IMAGES[selectedProduct] && PRODUCT_GALLERY_IMAGES[selectedProduct].length > 0 && (
-                            <ProductGallery
-                                images={PRODUCT_GALLERY_IMAGES[selectedProduct]}
-                                label={`${activeProductData.name} Photos`}
-                            />
-                        )}
 
                         {/* 1. Top Section: Controls (Size + Quantity + Cart) */}
                         <div className="flex flex-col xl:flex-row items-stretch xl:items-end gap-6 my-8">
@@ -1531,9 +1513,6 @@ const Shop = () => {
                     </div>
                 </div>
             )}
-        </div>
-        <div className="py-10">
-          <ShippingWorldwide center delay={0} />
         </div>
         <Footer />
         </>
