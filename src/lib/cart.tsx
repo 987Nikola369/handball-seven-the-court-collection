@@ -94,14 +94,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         <>
           <div
             onClick={() => setClosedNoticeOpen(false)}
-            className="fixed inset-0 z-[398] bg-background/85 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-[398] bg-background/85 backdrop-blur-sm"
           />
+
           <div className="fixed inset-0 z-[400] flex items-center justify-center p-5 overflow-y-auto">
             <div
               role="dialog"
               aria-modal="true"
               aria-labelledby="shop-closed-title"
-              className="relative w-full max-w-md bg-card border border-border p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-200"
+              className="relative w-full max-w-md bg-card border border-border p-6 sm:p-8 text-center"
             >
               <button
                 onClick={() => setClosedNoticeOpen(false)}
