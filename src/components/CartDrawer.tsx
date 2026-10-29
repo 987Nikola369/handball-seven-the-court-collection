@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import ShippingForm, { type ShippingInfo } from "@/components/ShippingForm";
 
 const CartDrawer = () => {
-  const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice } = useCart();
+  const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, shopClosed, showShopClosed } = useCart();
   const { t } = useI18n();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -29,7 +29,12 @@ const CartDrawer = () => {
   const remaining = displayThreshold > 0 ? Math.max(0, displayThreshold - totalPrice) : 0;
 
   const handleCheckout = async (shippingInfo: ShippingInfo) => {
+    if (shopClosed) {
+      showShopClosed();
+      return;
+    }
     if (!user) {
+
       setIsOpen(false);
       toast.info("Please sign in or create an account before checkout.");
       navigate("/auth");
@@ -64,7 +69,12 @@ const CartDrawer = () => {
   };
 
   const handleProceed = () => {
+    if (shopClosed) {
+      showShopClosed();
+      return;
+    }
     if (!user) {
+
       setIsOpen(false);
       toast.info("Please sign in or create an account before checkout.");
       navigate("/auth");
