@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, PackageOpen } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -53,7 +52,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       showShopClosed();
       return false;
     }
-
     setItems(prev => {
       const existing = prev.find(i => i.id === item.id && i.size === item.size);
       if (existing) {
@@ -64,7 +62,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsOpen(true);
     return true;
   };
-
 
   const removeItem = (id: string, size: string) => setItems(prev => prev.filter(i => !(i.id === id && i.size === size)));
   const updateQuantity = (id: string, size: string, qty: number) => {
@@ -93,63 +90,54 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     >
       {children}
 
-      <AnimatePresence>
-        {closedNoticeOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setClosedNoticeOpen(false)}
-              className="fixed inset-0 z-[398] bg-background/85 backdrop-blur-sm"
-            />
-            <div className="fixed inset-0 z-[400] flex items-center justify-center p-5 overflow-y-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 16, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 16, scale: 0.97 }}
-                transition={{ type: "tween", duration: 0.25 }}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="shop-closed-title"
-                className="relative w-full max-w-md bg-card border border-border p-6 sm:p-8 text-center"
+      {closedNoticeOpen && (
+        <>
+          <div
+            onClick={() => setClosedNoticeOpen(false)}
+            className="fixed inset-0 z-[398] bg-background/85 backdrop-blur-sm animate-in fade-in duration-200"
+          />
+          <div className="fixed inset-0 z-[400] flex items-center justify-center p-5 overflow-y-auto">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="shop-closed-title"
+              className="relative w-full max-w-md bg-card border border-border p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-200"
+            >
+              <button
+                onClick={() => setClosedNoticeOpen(false)}
+                aria-label="Close"
+                className="absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-foreground/50 hover:text-foreground"
               >
-                <button
-                  onClick={() => setClosedNoticeOpen(false)}
-                  aria-label="Close"
-                  className="absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-foreground/50 hover:text-foreground"
-                >
-                  <X size={20} />
-                </button>
+                <X size={20} />
+              </button>
 
-                <div className="flex justify-center mb-5">
-                  <span className="flex items-center justify-center w-14 h-14 border border-border text-primary">
-                    <PackageOpen size={26} strokeWidth={1.5} />
-                  </span>
-                </div>
+              <div className="flex justify-center mb-5">
+                <span className="flex items-center justify-center w-14 h-14 border border-border text-primary">
+                  <PackageOpen size={26} strokeWidth={1.5} />
+                </span>
+              </div>
 
-                <h2
-                  id="shop-closed-title"
-                  className="font-display uppercase tracking-[0.2em] text-base sm:text-lg leading-relaxed"
-                >
-                  {t("shop_closed.title")}
-                </h2>
+              <h2
+                id="shop-closed-title"
+                className="font-display uppercase tracking-[0.2em] text-base sm:text-lg leading-relaxed"
+              >
+                {t("shop_closed.title")}
+              </h2>
 
-                <p className="font-body text-sm sm:text-base text-muted-foreground leading-relaxed mt-4">
-                  {t("shop_closed.message")}
-                </p>
+              <p className="font-body text-sm sm:text-base text-muted-foreground leading-relaxed mt-4">
+                {t("shop_closed.message")}
+              </p>
 
-                <button
-                  onClick={() => setClosedNoticeOpen(false)}
-                  className="btn-primary w-full min-h-[48px] mt-7 flex items-center justify-center"
-                >
-                  {t("shop_closed.button")}
-                </button>
-              </motion.div>
+              <button
+                onClick={() => setClosedNoticeOpen(false)}
+                className="btn-primary w-full min-h-[48px] mt-7 flex items-center justify-center"
+              >
+                {t("shop_closed.button")}
+              </button>
             </div>
-          </>
-        )}
-      </AnimatePresence>
+          </div>
+        </>
+      )}
     </CartContext.Provider>
   );
 };
