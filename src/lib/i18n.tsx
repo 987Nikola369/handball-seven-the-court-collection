@@ -27,6 +27,16 @@ const fallbackTranslations: Record<string, Record<Lang, string>> = {
   "nav.contact": { en: "Contact", de: "Kontakt", hr: "Kontakt" },
   "nav.cart": { en: "Cart", de: "Warenkorb", hr: "Košarica" },
 
+  // Webshop closed notice
+  "shop_closed.title": { en: "Webshop temporarily closed", de: "Webshop vorübergehend geschlossen", hr: "Webshop privremeno zatvoren" },
+  "shop_closed.message": {
+    en: "We are currently rebuilding the webshop. Please try again later, and thank you for your understanding.",
+    de: "Wir bauen den Webshop derzeit um. Bitte versuchen Sie es später erneut, und vielen Dank für Ihr Verständnis.",
+    hr: "Trenutno obnavljamo webshop. Molimo pokušajte kasnije, i hvala na razumijevanju."
+  },
+  "shop_closed.button": { en: "Got it", de: "Verstanden", hr: "Shvaćam" },
+
+
   // Hero (fallbacks)
   "hero.subtitle": { en: "The first lifestyle handball brand.", de: "Die erste Lifestyle-Handballmarke.", hr: "Prvi lifestyle handball brend." },
   "hero.slogan": { en: "Stubborn by nature.", de: "Stur von Natur aus.", hr: "Tvrdoglavi po prirodi." },
